@@ -16,7 +16,6 @@
 		5012247E1A8E57E4005BFDA1 /* NSString+PKTURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 5012247D1A8E57E4005BFDA1 /* NSString+PKTURL.m */; };
 		501224A41A8E5A6B005BFDA1 /* Podio.png in Resources */ = {isa = PBXBuildFile; fileRef = 501224A31A8E5A6B005BFDA1 /* Podio.png */; };
 		50C8F2A81A8CBF08009FF934 /* PodioKitCore.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 50C8F2A71A8CBF08009FF934 /* PodioKitCore.h */; };
-		50C8F2AA1A8CBF08009FF934 /* PodioKitCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C8F2A91A8CBF08009FF934 /* PodioKitCore.m */; };
 		50C8F2B01A8CBF08009FF934 /* libPodioKitCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 50C8F2A41A8CBF08009FF934 /* libPodioKitCore.a */; };
 		50C8F2D91A8CC0FF009FF934 /* PKTAsyncTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C8F2BF1A8CC0FF009FF934 /* PKTAsyncTask.m */; };
 		50C8F2DB1A8CC0FF009FF934 /* PKTClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C8F2C11A8CC0FF009FF934 /* PKTClient.m */; };
@@ -135,7 +134,6 @@
 		501224A31A8E5A6B005BFDA1 /* Podio.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Podio.png; sourceTree = "<group>"; };
 		50C8F2A41A8CBF08009FF934 /* libPodioKitCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPodioKitCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		50C8F2A71A8CBF08009FF934 /* PodioKitCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PodioKitCore.h; sourceTree = "<group>"; };
-		50C8F2A91A8CBF08009FF934 /* PodioKitCore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PodioKitCore.m; sourceTree = "<group>"; };
 		50C8F2AF1A8CBF08009FF934 /* PodioKitCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PodioKitCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		50C8F2B51A8CBF08009FF934 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50C8F2BE1A8CC0FF009FF934 /* PKTAsyncTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKTAsyncTask.h; sourceTree = "<group>"; };
@@ -335,8 +333,6 @@
 				50EA1B681A8E1BE90048C9A9 /* Common */,
 				50EA1B6A1A8E1CA10048C9A9 /* Push */,
 				50EA1B6F1A8E1CA10048C9A9 /* UIKit */,
-				50C8F2A71A8CBF08009FF934 /* PodioKitCore.h */,
-				50C8F2A91A8CBF08009FF934 /* PodioKitCore.m */,
 			);
 			path = PodioKitCore;
 			sourceTree = "<group>";
@@ -513,6 +509,7 @@
 		50EA1B681A8E1BE90048C9A9 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				50C8F2A71A8CBF08009FF934 /* PodioKitCore.h */,
 				50EA1B691A8E1C5E0048C9A9 /* Core */,
 				50C8F37B1A8CD814009FF934 /* API */,
 				50C8F3421A8CC563009FF934 /* Models */,
@@ -767,7 +764,6 @@
 				50EA1B7B1A8E1CA10048C9A9 /* PKTPushEvent.m in Sources */,
 				50C8F3241A8CC3C1009FF934 /* NSString+PKTRandom.m in Sources */,
 				50C8F3541A8CC613009FF934 /* PKTBlockValueTransformer.m in Sources */,
-				50C8F2AA1A8CBF08009FF934 /* PodioKitCore.m in Sources */,
 				50C8F3601A8CC655009FF934 /* PKTModelValueTransformer.m in Sources */,
 				50EA1B7C1A8E1CA10048C9A9 /* PKTFile+UIImage.m in Sources */,
 				50C8F3631A8CC655009FF934 /* PKTURLValueTransformer.m in Sources */,
@@ -939,7 +935,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C30F9ED376569995EC6821DC /* Pods.debug.xcconfig */;
 			buildSettings = {
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -949,7 +944,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 45AD6D522D823F8526E3899C /* Pods.release.xcconfig */;
 			buildSettings = {
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
