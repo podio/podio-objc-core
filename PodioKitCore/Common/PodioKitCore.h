@@ -17,6 +17,7 @@
 #import "PKCKeychain.h"
 #import "PKCKeychainTokenStore.h"
 #import "PKCDatastore.h"
+#import "PKCBaseAPI.h"
 
 #import "PKCOAuth2Token.h"
 #import "PKCFile.h"
