@@ -8,22 +8,22 @@
 
 #import <Foundation/Foundation.h>
 
-#import "PKTMacros.h"
-#import "PKTConstants.h"
+#import "PKCMacros.h"
+#import "PKCConstants.h"
 
-#import "PKTClient.h"
-#import "PKTRequest.h"
-#import "PKTResponse.h"
-#import "PKTKeychain.h"
-#import "PKTKeychainTokenStore.h"
-#import "PKTDatastore.h"
+#import "PKCClient.h"
+#import "PKCRequest.h"
+#import "PKCResponse.h"
+#import "PKCKeychain.h"
+#import "PKCKeychainTokenStore.h"
+#import "PKCDatastore.h"
 
-#import "PKTOAuth2Token.h"
-#import "PKTFile.h"
-#import "PKTPushCredential.h"
+#import "PKCOAuth2Token.h"
+#import "PKCFile.h"
+#import "PKCPushCredential.h"
 
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-#import "PKTFile+UIImage.h"
-#import "UIButton+PKTRemoteImage.h"
-#import "UIImageView+PKTRemoteImage.h"
+#import "PKCFile+UIImage.h"
+#import "UIButton+PKCRemoteImage.h"
+#import "UIImageView+PKCRemoteImage.h"
 #endif

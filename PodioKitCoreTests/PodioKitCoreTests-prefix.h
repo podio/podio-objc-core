@@ -10,6 +10,6 @@
 
   #define EXP_SHORTHAND
   #import <Expecta/Expecta.h>
-  #import "EXPMatchers+PKTBeSupersetOf.h"
+  #import "EXPMatchers+PKCBeSupersetOf.h"
 
 #endif

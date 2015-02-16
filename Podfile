@@ -1,7 +1,10 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
-pod 'DDCometClient',  '~> 1.0'
-pod 'FXReachability', '~> 1.3'
+target 'PodioKitCore' do
+  
+  pod 'DDCometClient',  '~> 1.0'
+  pod 'FXReachability', '~> 1.3'
+end
 
 target 'PodioKitCoreTests' do
   
