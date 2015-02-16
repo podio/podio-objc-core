@@ -11,6 +11,7 @@
 #import "PKCMacros.h"
 #import "PKCConstants.h"
 
+#import "Podio.h"
 #import "PKCClient.h"
 #import "PKCRequest.h"
 #import "PKCResponse.h"
