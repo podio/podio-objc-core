@@ -22,4 +22,6 @@ extern NSString * const PKCErrorPropagateKey;
 
 - (BOOL)pkc_isServerError;
 
+- (NSString *)pkc_localizedServerSideDescription;
+
 @end

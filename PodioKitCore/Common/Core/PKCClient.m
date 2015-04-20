@@ -32,23 +32,24 @@ typedef NS_ENUM(NSUInteger, PKCClientAuthRequestPolicy) {
 
 @property (nonatomic, strong, readonly) PKCRequest *request;
 @property (nonatomic, copy) PKCRequestCompletionBlock completionBlock;
+@property (nonatomic, copy) PKCRequestProgressBlock progressBlock;
+@property (nonatomic, strong) NSURLSessionTask *task;
 
 @end
 
 @implementation PKCPendingRequest {
-
-  /**
-   *  A pending task can only be either started or cancelled once, but not both or multiple times.
-   */
-  dispatch_once_t _performedOnceToken;
+  
+  dispatch_once_t _startedOnceToken;
+  dispatch_once_t _cancelledOnceToken;
 }
 
-- (instancetype)initWithRequest:(PKCRequest *)request completion:(PKCRequestCompletionBlock)completion {
+- (instancetype)initWithRequest:(PKCRequest *)request progress:(PKCRequestProgressBlock)progress completion:(PKCRequestCompletionBlock)completion {
   self = [super init];
   if (!self) return nil;
   
   _request = request;
   _completionBlock = [completion copy];
+  _progressBlock = [progress copy];
   
   return self;
 }
@@ -60,11 +61,11 @@ typedef NS_ENUM(NSUInteger, PKCClientAuthRequestPolicy) {
  *  @param client The HTTP client from which to request the NSURLSessionTask.
  */
 - (void)startWithHTTPClient:(PKCHTTPClient *)client {
-  dispatch_once(&_performedOnceToken, ^{
-    NSURLSessionTask *task = [client taskForRequest:self.request completion:self.completionBlock];
+  dispatch_once(&_startedOnceToken, ^{
+    self.task = [client taskForRequest:self.request progress:self.progressBlock completion:self.completionBlock];
     self.completionBlock = nil;
     
-    [task resume];
+    [self.task resume];
   });
 }
 
@@ -75,11 +76,13 @@ typedef NS_ENUM(NSUInteger, PKCClientAuthRequestPolicy) {
  *  @param client The HTTP client from which to request the NSURLSessionTask.
  */
 - (void)cancelWithHTTPClient:(PKCHTTPClient *)client {
-  dispatch_once(&_performedOnceToken, ^{
-    NSURLSessionTask *task = [client taskForRequest:self.request completion:self.completionBlock];
-    self.completionBlock = nil;
+  dispatch_once(&_cancelledOnceToken, ^{
+    if (!self.task) {
+      self.task = [client taskForRequest:self.request progress:self.progressBlock completion:self.completionBlock];
+      self.completionBlock = nil;
+    }
     
-    [task cancel];
+    [self.task cancel];
   });
 }
 
@@ -230,10 +233,17 @@ typedef NS_ENUM(NSUInteger, PKCClientAuthRequestPolicy) {
   return [self authenticateWithRequest:request requestPolicy:PKCClientAuthRequestPolicyCancelPrevious];
 }
 
+- (PKCAsyncTask *)authenticateWithTransferToken:(NSString *)transferToken {
+  NSParameterAssert(transferToken);
+  
+  PKCRequest *request = [PKCAuthenticationAPI requestForAuthenticationWithTransferToken:transferToken];
+  return [self authenticateWithRequest:request requestPolicy:PKCClientAuthRequestPolicyCancelPrevious];
+}
+
 - (void)authenticateAutomaticallyAsAppWithID:(NSUInteger)appID token:(NSString *)appToken {
   NSParameterAssert(appID);
   NSParameterAssert(appToken);
-  
+
   self.savedAuthenticationRequest = [PKCAuthenticationAPI requestForAuthenticationWithAppID:appID token:appToken];
 }
 
@@ -252,12 +262,12 @@ typedef NS_ENUM(NSUInteger, PKCClientAuthRequestPolicy) {
 
   // Always use basic authentication for authentication requests
   request.URLRequestConfigurationBlock = ^NSURLRequest *(NSURLRequest *urlRequest) {
-      PKC_STRONG(weakSelf) strongSelf = weakSelf;
-
-      NSMutableURLRequest *mutURLRequest = [urlRequest mutableCopy];
-      [mutURLRequest pkc_setAuthorizationHeaderWithUsername:strongSelf.apiKey password:strongSelf.apiSecret];
-
-      return [mutURLRequest copy];
+    PKC_STRONG(weakSelf) strongSelf = weakSelf;
+    
+    NSMutableURLRequest *mutURLRequest = [urlRequest mutableCopy];
+    [mutURLRequest pkc_setAuthorizationHeaderWithUsername:strongSelf.apiKey password:strongSelf.apiSecret];
+    
+    return [mutURLRequest copy];
   };
 
   self.authenticationTask = [[self performTaskWithRequest:request] then:^(PKCResponse *response, NSError *error) {
@@ -331,10 +341,8 @@ typedef NS_ENUM(NSUInteger, PKCClientAuthRequestPolicy) {
   PKCAsyncTask *task = [PKCAsyncTask taskForBlock:^PKCAsyncTaskCancelBlock(PKCAsyncTaskResolver *resolver) {
     pendingRequest = [self pendingRequestForRequest:request taskResolver:resolver];
     
-    PKC_WEAK(pendingRequest) weakPendingRequest = pendingRequest;
-    
     return ^{
-      [weakPendingRequest cancelWithHTTPClient:weakSelf.HTTPClient];
+      [pendingRequest cancelWithHTTPClient:weakSelf.HTTPClient];
     };
   }];
   
@@ -351,10 +359,8 @@ typedef NS_ENUM(NSUInteger, PKCClientAuthRequestPolicy) {
   PKCAsyncTask *task = [PKCAsyncTask taskForBlock:^PKCAsyncTaskCancelBlock(PKCAsyncTaskResolver *resolver) {
     pendingRequest = [self pendingRequestForRequest:request taskResolver:resolver];
     
-    PKC_WEAK(pendingRequest) weakPendingRequest = pendingRequest;
-    
     return ^{
-      [weakPendingRequest cancelWithHTTPClient:weakSelf.HTTPClient];
+      [pendingRequest cancelWithHTTPClient:weakSelf.HTTPClient];
     };
   }];
   
@@ -365,8 +371,13 @@ typedef NS_ENUM(NSUInteger, PKCClientAuthRequestPolicy) {
 
 - (PKCPendingRequest *)pendingRequestForRequest:(PKCRequest *)request taskResolver:(PKCAsyncTaskResolver *)taskResolver {
   PKC_WEAK_SELF weakSelf = self;
+  PKC_WEAK(taskResolver) weakResolver = taskResolver;
   
-  return [[PKCPendingRequest alloc] initWithRequest:request completion:^(PKCResponse *response, NSError *error) {
+  PKCPendingRequest *pendingRequest = [[PKCPendingRequest alloc] initWithRequest:request progress:^(float progress, int64_t totalBytesExpected, int64_t totalBytesReceived) {
+    // The task made progress
+    [weakResolver notifyProgress:progress];
+  }  completion:^(PKCResponse *response, NSError *error) {
+    // The task completed
     PKC_STRONG(weakSelf) strongSelf = weakSelf;
     
     if (!error) {
@@ -380,13 +391,15 @@ typedef NS_ENUM(NSUInteger, PKCClientAuthRequestPolicy) {
       [taskResolver failWithError:error];
     }
   }];
+
+  return pendingRequest;
 }
 
 - (void)processPendingRequests {
   for (PKCPendingRequest *request in self.pendingRequests) {
     [request startWithHTTPClient:self.HTTPClient];
   }
-  
+
   [self.pendingRequests removeAllObjects];
 }
 
@@ -394,7 +407,7 @@ typedef NS_ENUM(NSUInteger, PKCClientAuthRequestPolicy) {
   for (PKCPendingRequest *request in self.pendingRequests) {
     [request cancelWithHTTPClient:self.HTTPClient];
   }
-  
+
   [self.pendingRequests removeAllObjects];
 }
 
@@ -406,7 +419,7 @@ typedef NS_ENUM(NSUInteger, PKCClientAuthRequestPolicy) {
   
   [[NSNotificationCenter defaultCenter] postNotificationName:PKCClientAuthenticationStateDidChangeNotification object:self];
 }
-
+  
 - (void)updateAuthorizationHeader:(BOOL)isAuthenticated {
   if (isAuthenticated) {
     [self.HTTPClient.requestSerializer setAuthorizationHeaderWithOAuth2AccessToken:self.oauthToken.accessToken];
@@ -425,10 +438,10 @@ typedef NS_ENUM(NSUInteger, PKCClientAuthRequestPolicy) {
     [self.tokenStore deleteStoredToken];
   }
 }
-
+  
 - (void)restoreTokenIfNeeded {
   if (!self.tokenStore) return;
-  
+
   if (!self.isAuthenticated) {
     self.oauthToken = [self.tokenStore storedToken];
   }

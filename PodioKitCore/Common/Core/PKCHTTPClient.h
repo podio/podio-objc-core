@@ -19,12 +19,26 @@
  */
 typedef void(^PKCRequestCompletionBlock)(PKCResponse *response, NSError *error);
 
+/**
+ *  A progress block to be called whenever a task makes progress.
+ *
+ *  @param progress           The current progress of the task.
+ *  @param totalBytesExpected The total expected number of bytes to be received.
+ *  @param totalBytesReceived The current number of bytes received at the time of calling this block.
+ */
+typedef void(^PKCRequestProgressBlock)(float progress, int64_t totalBytesExpected, int64_t totalBytesReceived);
+
 @interface PKCHTTPClient : NSObject
 
 /**
  *  The base URL for the API endpoint. The default is https://api.podio.com.
  */
 @property (nonatomic, copy) NSURL *baseURL;
+
+/**
+ *  The user agent string of the user agent.
+ */
+@property (nonatomic, copy) NSString *userAgent;
 
 /**
  *  The serializer of the request.
@@ -46,10 +60,11 @@ typedef void(^PKCRequestCompletionBlock)(PKCResponse *response, NSError *error);
  *  will be executed upon completion.
  *
  *  @param request    The request
+ *  @param completion A block to be called when the task makes progress, or nil.
  *  @param completion A completion handler to be executed on task completion.
  *
  *  @return An NSURLSessionTask
  */
-- (NSURLSessionTask *)taskForRequest:(PKCRequest *)request completion:(PKCRequestCompletionBlock)completion;
+- (NSURLSessionTask *)taskForRequest:(PKCRequest *)request progress:(PKCRequestProgressBlock)progress completion:(PKCRequestCompletionBlock)completion;
 
 @end

@@ -30,19 +30,20 @@
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     eventTypes = @{
-                     @"typing": @(PKCPushEventTypeTyping),
-                     @"viewing": @(PKCPushEventTypeViewing),
-                     @"leaving": @(PKCPushEventTypeLeaving),
-                     @"conversation_event": @(PKCPushEventTypeConversationEvent),
-                     @"conversation_read": @(PKCPushEventTypeConversationRead),
-                     @"conversation_unread": @(PKCPushEventTypeConversationUnread),
-                     @"conversation_starred": @(PKCPushEventTypeConversationStarred),
-                     @"conversation_unstarred": @(PKCPushEventTypeConversationUnstarred),
-                     @"conversation_read_all": @(PKCPushEventTypeConversationReadAll),
-                     @"conversation_starred_count": @(PKCPushEventTypeConversationStarredCount),
-                     @"conversation_unread_count": @(PKCPushEventTypeConversationUnreadCount),
-                     @"notification_unread": @(PKCPushEventTypeNotificationUnread)
-                    };
+                   @"typing": @(PKCPushEventTypeTyping),
+                   @"viewing": @(PKCPushEventTypeViewing),
+                   @"leaving": @(PKCPushEventTypeLeaving),
+                   @"conversation_event": @(PKCPushEventTypeConversationEvent),
+                   @"conversation_read": @(PKCPushEventTypeConversationRead),
+                   @"conversation_unread": @(PKCPushEventTypeConversationUnread),
+                   @"conversation_starred": @(PKCPushEventTypeConversationStarred),
+                   @"conversation_unstarred": @(PKCPushEventTypeConversationUnstarred),
+                   @"conversation_read_all": @(PKCPushEventTypeConversationReadAll),
+                   @"conversation_starred_count": @(PKCPushEventTypeConversationStarredCount),
+                   @"conversation_unread_count": @(PKCPushEventTypeConversationUnreadCount),
+                   @"notification_unread": @(PKCPushEventTypeNotificationUnread),
+                   @"notification_create": @(PKCPushEventTypeNotificationCreate),
+                   };
   });
   
   return [NSValueTransformer pkc_transformerWithDictionary:eventTypes];

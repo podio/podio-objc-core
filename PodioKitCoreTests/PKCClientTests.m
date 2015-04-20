@@ -110,8 +110,8 @@
   }];
   
   expect(task).notTo.beNil();
-//  expect(task.currentRequest.allHTTPHeaderFields[@"Authorization"]).equal([self basicAuthHeaderForTestClient]);
-
+  //  expect(task.currentRequest.allHTTPHeaderFields[@"Authorization"]).equal([self basicAuthHeaderForTestClient]);
+  
   expect(completed).will.beTruthy();
   expect(self.testClient.isAuthenticated).to.beTruthy();
   expect(self.testClient.oauthToken).notTo.equal(initialToken);
@@ -279,7 +279,7 @@
   // Make 1st request
   [PKCHTTPStubs stubResponseForPath:request.path statusCode:200];
   
-  NSString *beforeHeader = self.testClient.HTTPClient.requestSerializer.additionalHTTPHeaders[@"Authorization"];
+  NSString *beforeHeader = [self.testClient.HTTPClient.requestSerializer valueForHTTPHeader:PKCRequestSerializerHTTPHeaderKeyAuthorization];
   
   __block BOOL completed = NO;
   [[self.testClient performRequest:request] onSuccess:^(id result) {
@@ -288,7 +288,7 @@
   
   expect(completed).will.beTruthy();
   
-  NSString *afterHeader = self.testClient.HTTPClient.requestSerializer.additionalHTTPHeaders[@"Authorization"];
+  NSString *afterHeader = [self.testClient.HTTPClient.requestSerializer valueForHTTPHeader:PKCRequestSerializerHTTPHeaderKeyAuthorization];
   expect(afterHeader).toNot.equal(beforeHeader);
 }
 
@@ -301,8 +301,8 @@
   [[self.testClient authenticateAsUserWithEmail:@"me@domain.com" password:@"p4$$w0rD"] onSuccess:^(id result) {
     completed = YES;
   }];
-
-  expect(self.testClient.HTTPClient.requestSerializer.additionalHTTPHeaders[@"Authorization"]).equal([self basicAuthHeaderForTestClient]);
+  
+  expect([self.testClient.HTTPClient.requestSerializer valueForHTTPHeader:PKCRequestSerializerHTTPHeaderKeyAuthorization]).equal([self basicAuthHeaderForTestClient]);
   
   expect(completed).will.beTruthy();
   expect(self.testClient.oauthToken).toNot.beNil();
@@ -317,8 +317,24 @@
   [[self.testClient authenticateAsAppWithID:1234 token:@"app-token"] onSuccess:^(id result) {
     completed = YES;
   }];
+  
+  expect([self.testClient.HTTPClient.requestSerializer valueForHTTPHeader:PKCRequestSerializerHTTPHeaderKeyAuthorization]).equal([self basicAuthHeaderForTestClient]);
+  
+  expect(completed).will.beTruthy();
+  expect(self.testClient.oauthToken).toNot.beNil();
+}
 
-  expect(self.testClient.HTTPClient.requestSerializer.additionalHTTPHeaders[@"Authorization"]).equal([self basicAuthHeaderForTestClient]);
+- (void)testAuthenticationWithTransferToken {
+  NSDictionary *tokenDict = [self dummyAuthTokenDict];
+  PKCRequest *authRequest = [PKCAuthenticationAPI requestForAuthenticationWithTransferToken:@"some-transfer-token"];
+  [PKCHTTPStubs stubResponseForPath:authRequest.path responseObject:tokenDict];
+  
+  __block BOOL completed = NO;
+  [[self.testClient authenticateWithTransferToken:@"some-transfer-token"] onSuccess:^(id result) {
+    completed = YES;
+  }];
+  
+  expect([self.testClient.HTTPClient.requestSerializer valueForHTTPHeader:PKCRequestSerializerHTTPHeaderKeyAuthorization]).equal([self basicAuthHeaderForTestClient]);
   
   expect(completed).will.beTruthy();
   expect(self.testClient.oauthToken).toNot.beNil();

@@ -46,7 +46,7 @@
   [PKCHTTPStubs stubResponseForPath:path statusCode:200];
 
   __block BOOL completed = NO;
-  NSURLSessionTask *task = [self.testClient taskForRequest:request completion:^(PKCResponse *result, NSError *error) {
+  NSURLSessionTask *task = [self.testClient taskForRequest:request progress:nil completion:^(PKCResponse *result, NSError *error) {
     if (!error) {
       completed = YES;
     }
@@ -65,7 +65,7 @@
   [PKCHTTPStubs stubResponseForPath:path statusCode:500];
 
   __block BOOL errorOccured = NO;
-  NSURLSessionTask *task = [self.testClient taskForRequest:request completion:^(PKCResponse *result, NSError *error) {
+  NSURLSessionTask *task = [self.testClient taskForRequest:request progress:nil completion:^(PKCResponse *result, NSError *error) {
     if (error) {
       errorOccured = YES;
     }
@@ -84,7 +84,7 @@
   [PKCHTTPStubs stubResponseForPath:path requestTime:2 responseTime:0];
 
   __block BOOL completed = NO;
-  NSURLSessionTask *task = [self.testClient taskForRequest:request completion:^(PKCResponse *result, NSError *error) {
+  NSURLSessionTask *task = [self.testClient taskForRequest:request progress:nil completion:^(PKCResponse *result, NSError *error) {
     completed = YES;
   }];
   
@@ -101,7 +101,7 @@
   [PKCHTTPStubs stubResponseForPath:path requestTime:5 responseTime:0];
 
   __block BOOL cancelled = NO;
-  NSURLSessionTask *task = [self.testClient taskForRequest:request completion:^(PKCResponse *result, NSError *error) {
+  NSURLSessionTask *task = [self.testClient taskForRequest:request progress:nil completion:^(PKCResponse *result, NSError *error) {
     if (error.code == NSURLErrorCancelled) {
       cancelled = YES;
     }
@@ -124,7 +124,7 @@
   [PKCHTTPStubs stubResponseForPath:path requestTime:5 responseTime:0];
 
   __block BOOL completed = NO;
-  NSURLSessionTask *task = [self.testClient taskForRequest:request completion:^(PKCResponse *result, NSError *error) {
+  NSURLSessionTask *task = [self.testClient taskForRequest:request progress:nil completion:^(PKCResponse *result, NSError *error) {
     completed = YES;
   }];
   
@@ -143,7 +143,7 @@
   [PKCHTTPStubs stubResponseForPath:path requestTime:2 responseTime:0];
 
   __block BOOL completed = NO;
-  NSURLSessionTask *task = [self.testClient taskForRequest:request completion:^(PKCResponse *result, NSError *error) {
+  NSURLSessionTask *task = [self.testClient taskForRequest:request progress:nil completion:^(PKCResponse *result, NSError *error) {
     completed = YES;
   }];
 
@@ -152,7 +152,9 @@
 
   [task suspend];
   expect(completed).will.beFalsy();
-
+  
+  wait(1);
+  
   [task resume];
   expect(completed).will.beTruthy();
 }
@@ -174,7 +176,7 @@
   
   __block BOOL completed = NO;
   __block NSError *serverError = nil;
-  NSURLSessionTask *task = [self.testClient taskForRequest:request completion:^(PKCResponse *result, NSError *error) {
+  NSURLSessionTask *task = [self.testClient taskForRequest:request progress:nil completion:^(PKCResponse *result, NSError *error) {
     completed = YES;
     serverError = error;
   }];
@@ -189,8 +191,19 @@
   PKCRequest *request = [PKCRequest GETRequestWithURL:[NSURL URLWithString:@"https://files.podio.com/111111"] parameters:nil];
   request.fileData = [PKCRequestFileData fileDataWithFilePath:@"/tmp/file.pdf" name:nil fileName:nil];
   
-  id task = [self.testClient taskForRequest:request completion:nil];
+  id task = [self.testClient taskForRequest:request progress:nil completion:nil];
   expect(task).to.beKindOf([NSURLSessionDownloadTask class]);
+}
+
+- (void)testSetUserAgent {
+  NSString *userAgent = @"Some user agent";
+  self.testClient.userAgent = userAgent;
+  expect([self.testClient.requestSerializer valueForHTTPHeader:PKCRequestSerializerHTTPHeaderKeyUserAgent]).to.equal(userAgent);
+  expect(self.testClient.userAgent).to.equal(userAgent);
+  
+  userAgent = @"Some other user agent";
+  [self.testClient.requestSerializer setUserAgentHeader:userAgent];
+  expect(self.testClient.userAgent).to.equal(userAgent);
 }
 
 @end

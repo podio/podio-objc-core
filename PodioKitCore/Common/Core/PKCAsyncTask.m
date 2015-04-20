@@ -23,6 +23,7 @@ typedef NS_ENUM(NSUInteger, PKCAsyncTaskState) {
 @property (strong, readonly) NSMutableArray *completeCallbacks;
 @property (strong, readonly) NSMutableArray *successCallbacks;
 @property (strong, readonly) NSMutableArray *errorCallbacks;
+@property (strong, readonly) NSMutableArray *progressCallbacks;
 @property (copy) PKCAsyncTaskCancelBlock cancelBlock;
 @property (strong) NSLock *stateLock;
 
@@ -54,6 +55,7 @@ typedef NS_ENUM(NSUInteger, PKCAsyncTaskState) {
   _completeCallbacks = [NSMutableArray new];
   _successCallbacks = [NSMutableArray new];
   _errorCallbacks = [NSMutableArray new];
+  _progressCallbacks = [NSMutableArray new];
   _stateLock = [NSLock new];
   
   return self;
@@ -89,6 +91,7 @@ typedef NS_ENUM(NSUInteger, PKCAsyncTaskState) {
     
     NSUInteger taskCount = [tasks count];
     NSMutableDictionary *results = [NSMutableDictionary new];
+    NSMutableDictionary *progresses = [NSMutableDictionary new];
     
     // We need a lock to synchronize access to the results dictionary and remaining tasks set.
     NSLock *lock = [NSLock new];
@@ -123,7 +126,7 @@ typedef NS_ENUM(NSUInteger, PKCAsyncTaskState) {
         
         [lock unlock];
         
-        if ([pendingTasks count] == 0) {
+        if (results.count == taskCount) {
           // All tasks have completed, collect the results and sort them in the
           // tasks' original ordering
           NSArray *positions = [NSArray pkc_arrayFromRange:NSMakeRange(0, taskCount)];
@@ -139,6 +142,22 @@ typedef NS_ENUM(NSUInteger, PKCAsyncTaskState) {
         [resolver failWithError:error];
       }];
       
+      [task onProgress:^(float progress) {
+        progresses[@(pos)] = @(progress);
+        
+        // Add together the progress of all tasks
+        float completedProgress = [[[progresses allValues] pkc_reducedValueWithBlock:^id(NSNumber *reduced, NSNumber *current) {
+          return @(reduced.floatValue + current.floatValue);
+        }] floatValue];
+        
+        // Calculate how much of the total value has been completed. The individual progress between the tasks is not
+        // weighted, so if one task includes "more" work, it will still only contribute 1.0 to the total progress.
+        float totalProgress = taskCount * 1.f;
+        float currentProgress = completedProgress / totalProgress;
+        
+        [resolver notifyProgress:currentProgress];
+      }];
+      
       ++pos;
     }
     
@@ -147,13 +166,17 @@ typedef NS_ENUM(NSUInteger, PKCAsyncTaskState) {
 }
 
 - (instancetype)then:(PKCAsyncTaskThenBlock)thenBlock {
-  return [PKCAsyncTask taskForBlock:^PKCAsyncTaskCancelBlock(PKCAsyncTaskResolver *resolver) {
+  return [[self class] taskForBlock:^PKCAsyncTaskCancelBlock(PKCAsyncTaskResolver *resolver) {
     [self onSuccess:^(id result) {
       thenBlock(result, nil);
       [resolver succeedWithResult:result];
     } onError:^(NSError *error) {
       thenBlock(nil, error);
       [resolver failWithError:error];
+    }];
+    
+    [self onProgress:^(float progress) {
+      [resolver notifyProgress:progress];
     }];
     
     PKC_WEAK_SELF weakSelf = self;
@@ -165,13 +188,17 @@ typedef NS_ENUM(NSUInteger, PKCAsyncTaskState) {
 }
 
 - (instancetype)map:(id (^)(id result))block {
-  return [PKCAsyncTask taskForBlock:^PKCAsyncTaskCancelBlock(PKCAsyncTaskResolver *resolver) {
+  return [[self class] taskForBlock:^PKCAsyncTaskCancelBlock(PKCAsyncTaskResolver *resolver) {
     
     [self onSuccess:^(id result) {
       id mappedResult = block ? block(result) : result;
       [resolver succeedWithResult:mappedResult];
     } onError:^(NSError *error) {
       [resolver failWithError:error];
+    }];
+    
+    [self onProgress:^(float progress) {
+      [resolver notifyProgress:progress];
     }];
     
     PKC_WEAK_SELF weakSelf = self;
@@ -228,7 +255,7 @@ typedef NS_ENUM(NSUInteger, PKCAsyncTaskState) {
 #pragma mark - KVO
 
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
-	NSMutableSet *keyPaths = [[super keyPathsForValuesAffectingValueForKey:key] mutableCopy];
+  NSMutableSet *keyPaths = [[super keyPathsForValuesAffectingValueForKey:key] mutableCopy];
   
   NSArray *keysAffectedByState = @[
                                    NSStringFromSelector(@selector(completed)),
@@ -237,10 +264,10 @@ typedef NS_ENUM(NSUInteger, PKCAsyncTaskState) {
                                    ];
   
   if ([keysAffectedByState containsObject:key]) {
-		[keyPaths addObject:NSStringFromSelector(@selector(state))];
+    [keyPaths addObject:NSStringFromSelector(@selector(state))];
   }
   
-	return [keyPaths copy];
+  return [keyPaths copy];
 }
 
 #pragma mark - Register callbacks
@@ -300,6 +327,14 @@ typedef NS_ENUM(NSUInteger, PKCAsyncTaskState) {
   return self;
 }
 
+- (instancetype)onProgress:(PKCAsyncTaskProgressBlock)progressBlock {
+  NSParameterAssert(progressBlock);
+  
+  [self.progressCallbacks addObject:[progressBlock copy]];
+  
+  return self;
+}
+
 #pragma mark - Resolve
 
 - (void)succeedWithResult:(id)result {
@@ -308,6 +343,14 @@ typedef NS_ENUM(NSUInteger, PKCAsyncTaskState) {
 
 - (void)failWithError:(NSError *)error {
   [self resolveWithState:PKCAsyncTaskStateErrored result:error];
+}
+
+- (void)notifyProgress:(float)progress {
+  for (PKCAsyncTaskProgressBlock callback in self.progressCallbacks) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      callback(progress);
+    });
+  }
 }
 
 - (void)resolveWithState:(PKCAsyncTaskState)state result:(id)result {
@@ -398,6 +441,10 @@ typedef NS_ENUM(NSUInteger, PKCAsyncTaskState) {
 - (void)failWithError:(NSError *)error {
   [self.task failWithError:error];
   self.task = nil;
+}
+
+- (void)notifyProgress:(float)progress {
+  [self.task notifyProgress:progress];
 }
 
 @end

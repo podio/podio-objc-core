@@ -15,6 +15,7 @@ typedef void (^PKCAsyncTaskSuccessBlock) (id result);
 typedef void (^PKCAsyncTaskErrorBlock) (NSError *error);
 typedef void (^PKCAsyncTaskCancelBlock) (void);
 typedef void (^PKCAsyncTaskThenBlock) (id result, NSError *error);
+typedef void (^PKCAsyncTaskProgressBlock) (float progress);
 typedef PKCAsyncTaskCancelBlock (^PKCAsyncTaskResolveBlock) (PKCAsyncTaskResolver *resolver);
 
 @interface PKCAsyncTask : NSObject
@@ -95,7 +96,7 @@ typedef PKCAsyncTaskCancelBlock (^PKCAsyncTaskResolveBlock) (PKCAsyncTaskResolve
 - (instancetype)onError:(PKCAsyncTaskErrorBlock)errorBlock;
 
 /**
- *  Register a success and error block to be called when the task completes. These blocks will be 
+ *  Register a success and error block to be called when the task completes. These blocks will be
  *  executed on the main queue, but the execution order of registered blocks are not gauranteed.
  *
  *  @param successBlock A success block.
@@ -106,7 +107,16 @@ typedef PKCAsyncTaskCancelBlock (^PKCAsyncTaskResolveBlock) (PKCAsyncTaskResolve
 - (instancetype)onSuccess:(PKCAsyncTaskSuccessBlock)successBlock onError:(PKCAsyncTaskErrorBlock)errorBlock;
 
 /**
- *  Cancel the task. This will result in the execution of the cancellation block returned from the block 
+ *  Register a block to be called whenever the task progress is updated. The block is executed on the main thread.
+ *
+ *  @param progressBlock A progress block.
+ *
+ *  @return The task itself.
+ */
+- (instancetype)onProgress:(PKCAsyncTaskProgressBlock)progressBlock;
+
+/**
+ *  Cancel the task. This will result in the execution of the cancellation block returned from the block
  *  passed to taskForBlock:.
  */
 - (void)cancel;
@@ -145,8 +155,8 @@ typedef PKCAsyncTaskCancelBlock (^PKCAsyncTaskResolveBlock) (PKCAsyncTaskResolve
 
 /**
  *  Creates a new task that will, if the receiver successfully completes, execute the provided block to return
- *  a new task using the result of the receiver task. This is useful for chaining a task that depends on the 
- *  result of the receiver task. The returned task will only complete when the chained task has completed, or 
+ *  a new task using the result of the receiver task. This is useful for chaining a task that depends on the
+ *  result of the receiver task. The returned task will only complete when the chained task has completed, or
  *  if either the receiver task or the chained task fails.
  *
  *  @param block The block to create a new task once the receiver successfully completes.
@@ -172,5 +182,12 @@ typedef PKCAsyncTaskCancelBlock (^PKCAsyncTaskResolveBlock) (PKCAsyncTaskResolve
  *  @param result The error, if any, of the failed task.
  */
 - (void)failWithError:(NSError *)error;
+
+/**
+ *  Update the progress of the task.
+ *
+ *  @param The new progress value of the task.
+ */
+- (void)notifyProgress:(float)progress;
 
 @end

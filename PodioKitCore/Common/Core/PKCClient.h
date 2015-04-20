@@ -44,7 +44,7 @@ extern NSString * const PKCClientAuthenticationStateDidChangeNotification;
 
 /**
  *  An optional token store. A token store is an abstraction on top of any kind of storage to which the OAuth token
- *  can be persisted, e.g. the Keychain. A token store implementation for the iOS and OS X keychain is provided 
+ *  can be persisted, e.g. the Keychain. A token store implementation for the iOS and OS X keychain is provided
  *  by the PKCKeychainTokenStore class.
  *
  *  @see PKCKeychainTokenStore
@@ -59,7 +59,7 @@ extern NSString * const PKCClientAuthenticationStateDidChangeNotification;
 + (instancetype)defaultClient;
 
 /**
- *  The current API client. The current client for a give scope can be changed by 
+ *  The current API client. The current client for a give scope can be changed by
  *  using the performBlock: method.
  *
  *  @see performBlock:
@@ -100,7 +100,7 @@ extern NSString * const PKCClientAuthenticationStateDidChangeNotification;
 
 /**
  *  Execute a block for which the current client is self. This is useful to force the use
- *  of a client instead of the default client for a certain scope, and enabled multiple clients to 
+ *  of a client instead of the default client for a certain scope, and enabled multiple clients to
  *  work in parallel.
  *
  *  @see currentClient
@@ -109,7 +109,7 @@ extern NSString * const PKCClientAuthenticationStateDidChangeNotification;
  */
 - (void)performBlock:(void (^)(void))block;
 
-/** Authenticate the default client as a user with an email and password.
+/** Authenticate the client as a user with an email and password.
  *
  *  @see https://developers.podio.com/authentication/username_password
  *
@@ -130,6 +130,15 @@ extern NSString * const PKCClientAuthenticationStateDidChangeNotification;
  *  @return The resulting task.
  */
 - (PKCAsyncTask *)authenticateAsAppWithID:(NSUInteger)appID token:(NSString *)appToken;
+
+/**
+ *  Authenticate using a transfer token.
+ *
+ *  @param transferToken The transfer token.
+ *
+ *  @return The resulting task.
+ */
+- (PKCAsyncTask *)authenticateWithTransferToken:(NSString *)transferToken;
 
 /** Configure authentication parameters for authenticating the default client as an app.
  *

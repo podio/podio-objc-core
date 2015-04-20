@@ -7,28 +7,26 @@
 //
 
 #import "PKCHTTPClient.h"
-#import "PKCClient.h"
+#import "PKCURLSessionTaskDelegate.h"
 #import "PKCMultipartFormData.h"
 #import "PKCSecurity.h"
 #import "PKCMacros.h"
-#import "NSFileManager+PKCAdditions.h"
-#import "NSError+PKCErrors.h"
 
 static NSString * const kDefaultBaseURLString = @"https://api.podio.com";
 static char * const kRequestProcessingQueueLabel = "com.podio.podiokit.httpclient.response_processing_queue";
-
-typedef id (^PKCHTTPResponseProcessBlock) (void);
 
 typedef NS_ENUM(NSUInteger, PKCErrorCode) {
   PKCErrorCodeUnknown = 1000,
   PKCErrorCodeRequestFailed,
 };
 
-@interface PKCHTTPClient () <NSURLSessionDelegate>
+@interface PKCHTTPClient () <NSURLSessionDelegate, NSURLSessionDownloadDelegate, NSURLSessionDataDelegate>
 
 @property (nonatomic, strong, readonly) NSURLSession *session;
 @property (nonatomic, strong, readonly) dispatch_queue_t responseProcessingQueue;
 @property (nonatomic, strong) NSOperationQueue *delegateQueue;
+@property (nonatomic, strong) NSMutableDictionary *taskDelegates;
+@property (nonatomic, strong) NSLock *taskDelegatesLock;
 @property (nonatomic, copy, readonly) PKCSecurity *security;
 
 @end
@@ -48,6 +46,8 @@ typedef NS_ENUM(NSUInteger, PKCErrorCode) {
   _responseProcessingQueue = dispatch_queue_create(kRequestProcessingQueueLabel, DISPATCH_QUEUE_CONCURRENT);
   _requestSerializer = [PKCRequestSerializer new];
   _responseSerializer = [PKCResponseSerializer new];
+  _taskDelegates = [NSMutableDictionary new];
+  _taskDelegatesLock = [NSLock new];
   
   NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
   sessionConfig.HTTPShouldUsePipelining = YES;
@@ -60,6 +60,16 @@ typedef NS_ENUM(NSUInteger, PKCErrorCode) {
   return self;
 }
 
+#pragma mark - Properties
+
+- (NSString *)userAgent {
+  return [self.requestSerializer valueForHTTPHeader:PKCRequestSerializerHTTPHeaderKeyUserAgent];
+}
+
+- (void)setUserAgent:(NSString *)userAgent {
+  [self.requestSerializer setUserAgentHeader:userAgent];
+}
+
 #pragma mark - Private
 
 - (PKCSecurity *)security {
@@ -70,35 +80,29 @@ typedef NS_ENUM(NSUInteger, PKCErrorCode) {
   return _security;
 }
 
+- (void)addTaskDelegate:(PKCURLSessionTaskDelegate *)delegate forTask:(NSURLSessionTask *)task {
+  NSParameterAssert(delegate);
+  [self.taskDelegatesLock lock];
+  self.taskDelegates[@(task.taskIdentifier)] = delegate;
+  [self.taskDelegatesLock unlock];
+}
+
+- (void)removeDelegateForTask:(NSURLSessionTask *)task {
+  [self.taskDelegatesLock lock];
+  [self.taskDelegates removeObjectForKey:@(task.taskIdentifier)];
+  [self.taskDelegatesLock unlock];
+}
+
+- (PKCURLSessionTaskDelegate *)delegateForTask:(NSURLSessionTask *)task {
+  return self.taskDelegates[@(task.taskIdentifier)];
+}
+
 #pragma mark - Public
 
-- (NSURLSessionTask *)taskForRequest:(PKCRequest *)request completion:(PKCRequestCompletionBlock)completion {
-  
-  void (^handlerBlock) (NSData *, NSURLResponse *, NSError *, PKCHTTPResponseProcessBlock) = ^(NSData *data, NSURLResponse *URLResponse, NSError *error, PKCHTTPResponseProcessBlock processBlock){
-    if (!completion) return;
-    
-    dispatch_async(self.responseProcessingQueue, ^{
-      // Process response on background queue if needed
-      id responseObject = processBlock ? processBlock() : nil;
-      
-      dispatch_async(dispatch_get_main_queue(), ^{
-        // Compose response and return on the main queue
-        NSUInteger statusCode = [URLResponse isKindOfClass:[NSHTTPURLResponse class]] ? [(NSHTTPURLResponse *)URLResponse statusCode] : 0;
-        PKCResponse *response = [[PKCResponse alloc] initWithStatusCode:statusCode body:responseObject];
-        
-        // NSURLSession reports URL level errors, but does not generate errors for non-2xx status codes.
-        // Therefore we need to create our own error.
-        NSError *finalError = error;
-        if (!finalError && (statusCode < 200 || statusCode > 299)) {
-          finalError = [NSError pkc_serverErrorWithStatusCode:statusCode body:responseObject];
-        }
-        
-        completion(response, finalError);
-      });
-    });
-  };
-  
+- (NSURLSessionTask *)taskForRequest:(PKCRequest *)request progress:(PKCRequestProgressBlock)progress completion:(PKCRequestCompletionBlock)completion {
   NSURLSessionTask *task = nil;
+  
+  PKCHTTPResponseProcessBlock responseProcessBlock = nil;
   
   if (request.fileData && (request.method == PKCRequestMethodPOST || request.method == PKCRequestMethodPUT)) {
     // Upload task
@@ -107,36 +111,36 @@ typedef NS_ENUM(NSUInteger, PKCErrorCode) {
     
     NSMutableURLRequest *URLRequest = [self.requestSerializer URLRequestForRequest:request multipartData:multipartData relativeToURL:self.baseURL];
     
-    task = [self.session uploadTaskWithRequest:URLRequest fromData:data completionHandler:^(NSData *data, NSURLResponse *URLResponse, NSError *error) {
-      handlerBlock(data, URLResponse, error, ^{
-        return [self.responseSerializer responseObjectForURLResponse:URLResponse data:data];
-      });
-    }];
+    PKC_WEAK(self.responseSerializer) weakResponseSerializer = self.responseSerializer;
+    responseProcessBlock = ^(NSURLResponse *URLResponse, NSData *data, PKCURLSessionTaskDelegate *delegate) {
+      return [weakResponseSerializer responseObjectForURLResponse:URLResponse data:data];
+    };
+    
+    task = [self.session uploadTaskWithRequest:URLRequest fromData:data];
   } else {
     NSMutableURLRequest *URLRequest = [self.requestSerializer URLRequestForRequest:request relativeToURL:self.baseURL];
     
     if (request.fileData && request.method == PKCRequestMethodGET) {
       // Download task
-      task = [self.session downloadTaskWithRequest:URLRequest completionHandler:^(NSURL *location, NSURLResponse *URLResponse, NSError *error) {
-        NSError *finalError = error;
-        
-        if (location && !finalError) {
-          // Move the downloaded file from the temp location to the requested save location. This cannot happen in the processing block because it
-          // is executed asynchronously and the temporary file will be removed by the task after the execution of this completionHandler.
-          [[NSFileManager defaultManager] pkc_moveItemAtURL:location toPath:request.fileData.filePath withIntermediateDirectories:YES error:&finalError];
-        }
-        
-        handlerBlock(nil, URLResponse, finalError, nil);
-      }];
+      
+      task = [self.session downloadTaskWithRequest:URLRequest];
     } else {
       // Regular data task
-      task = [self.session dataTaskWithRequest:URLRequest completionHandler:^(NSData *data, NSURLResponse *URLResponse, NSError *error) {
-        handlerBlock(data, URLResponse, error, ^{
-          return [self.responseSerializer responseObjectForURLResponse:URLResponse data:data];
-        });
-      }];
+      task = [self.session dataTaskWithRequest:URLRequest];
+      
+      PKC_WEAK(self.responseSerializer) weakResponseSerializer = self.responseSerializer;
+      responseProcessBlock = ^(NSURLResponse *URLResponse, NSData *data, PKCURLSessionTaskDelegate *delegate) {
+        return [weakResponseSerializer responseObjectForURLResponse:URLResponse data:data];
+      };
     }
   }
+  
+  PKCURLSessionTaskDelegate *taskDelegate = [[PKCURLSessionTaskDelegate alloc] initWithRequest:request
+                                                                       responseProcessingQueue:self.responseProcessingQueue
+                                                                                 progressBlock:progress
+                                                                          responseProcessBlock:responseProcessBlock
+                                                                               completionBlock:completion];
+  [self addTaskDelegate:taskDelegate forTask:task];
   
   return task;
 }
@@ -164,6 +168,37 @@ typedef NS_ENUM(NSUInteger, PKCErrorCode) {
   if (completionHandler) {
     completionHandler(disposition, credential);
   }
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
+  PKCURLSessionTaskDelegate *taskDelegate = [self delegateForTask:task];
+  [taskDelegate task:task didCompleteWithError:error];
+  [self removeDelegateForTask:task];
+}
+
+#pragma mark - NSURLSessionDataDelegate
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
+  PKCURLSessionTaskDelegate *taskDelegate = [self delegateForTask:dataTask];
+  [taskDelegate task:dataTask didReceiveData:data];
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
+  PKCURLSessionTaskDelegate *taskDelegate = [self delegateForTask:task];
+  [taskDelegate taskDidUpdateProgress:task];
+}
+
+#pragma mark - NSURLSessionDownloadDelegate
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
+  PKCURLSessionTaskDelegate *taskDelegate = self.taskDelegates[@(downloadTask.taskIdentifier)];
+  [taskDelegate taskDidUpdateProgress:downloadTask];
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
+didFinishDownloadingToURL:(NSURL *)location {
+  PKCURLSessionTaskDelegate *taskDelegate = [self delegateForTask:downloadTask];
+  [taskDelegate task:downloadTask didFinishDownloadingToURL:location];
 }
 
 @end
