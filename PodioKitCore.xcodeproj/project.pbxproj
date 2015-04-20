@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		072F7B8AB048D65E5A5B31D4 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F84707DC8D2AD330ABD84C6 /* libPods.a */; };
 		5012246A1A8E4B19005BFDA1 /* PKCFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 501224691A8E4B19005BFDA1 /* PKCFile.m */; };
 		5012246E1A8E4B83005BFDA1 /* PKCFilesAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 5012246D1A8E4B83005BFDA1 /* PKCFilesAPI.m */; };
 		501224721A8E4C1B005BFDA1 /* NSURL+PKCImageURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 501224711A8E4C1B005BFDA1 /* NSURL+PKCImageURL.m */; };
@@ -91,6 +90,8 @@
 		50EA1B801A8E1CA10048C9A9 /* UIImageView+PKCRemoteImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 50EA1B791A8E1CA10048C9A9 /* UIImageView+PKCRemoteImage.m */; };
 		50EA1B8A1A8E1DC10048C9A9 /* PKCPushCredential.m in Sources */ = {isa = PBXBuildFile; fileRef = 50EA1B891A8E1DC10048C9A9 /* PKCPushCredential.m */; };
 		50EA1B8D1A8E1E030048C9A9 /* NSSet+PKCAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 50EA1B8C1A8E1E030048C9A9 /* NSSet+PKCAdditions.m */; };
+		50F275281AE5291300CA33C7 /* PKCURLSessionTaskDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 50F275271AE5291300CA33C7 /* PKCURLSessionTaskDelegate.m */; };
+		50F2752A1AE52F3800CA33C7 /* PKCURLSessionTaskDelegateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50F275291AE52F3800CA33C7 /* PKCURLSessionTaskDelegateTests.m */; };
 		70D6646E671E820AFB4A8E8A /* libPods-PodioKitCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2EC4EAC81C3C6AD932306DE0 /* libPods-PodioKitCore.a */; };
 		91FE27C9B15AE13AF3C326E1 /* libPods-PodioKitCoreTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD226D90A8F33E8FAF8A2DEC /* libPods-PodioKitCoreTests.a */; };
 /* End PBXBuildFile section */
@@ -277,6 +278,9 @@
 		50EA1B891A8E1DC10048C9A9 /* PKCPushCredential.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCPushCredential.m; sourceTree = "<group>"; };
 		50EA1B8B1A8E1E030048C9A9 /* NSSet+PKCAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSSet+PKCAdditions.h"; sourceTree = "<group>"; };
 		50EA1B8C1A8E1E030048C9A9 /* NSSet+PKCAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSSet+PKCAdditions.m"; sourceTree = "<group>"; };
+		50F275261AE5291300CA33C7 /* PKCURLSessionTaskDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKCURLSessionTaskDelegate.h; sourceTree = "<group>"; };
+		50F275271AE5291300CA33C7 /* PKCURLSessionTaskDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCURLSessionTaskDelegate.m; sourceTree = "<group>"; };
+		50F275291AE52F3800CA33C7 /* PKCURLSessionTaskDelegateTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCURLSessionTaskDelegateTests.m; sourceTree = "<group>"; };
 		5D7238D2A4BE06B25D67FB79 /* Pods-PodioKitCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PodioKitCore.release.xcconfig"; path = "Pods/Target Support Files/Pods-PodioKitCore/Pods-PodioKitCore.release.xcconfig"; sourceTree = "<group>"; };
 		64691D8A132554B6E34ED297 /* Pods-PodioKitCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PodioKitCore.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PodioKitCore/Pods-PodioKitCore.debug.xcconfig"; sourceTree = "<group>"; };
 		8F84707DC8D2AD330ABD84C6 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -290,7 +294,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				072F7B8AB048D65E5A5B31D4 /* libPods.a in Frameworks */,
 				70D6646E671E820AFB4A8E8A /* libPods-PodioKitCore.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -408,6 +411,7 @@
 				50C8F3031A8CC12D009FF934 /* PKCOAuth2TokenTests.m */,
 				50C8F3041A8CC12D009FF934 /* PKCReferenceTypeValueTransformerTests.m */,
 				50C8F3051A8CC12D009FF934 /* PKCRequestSerializerTests.m */,
+				50F275291AE52F3800CA33C7 /* PKCURLSessionTaskDelegateTests.m */,
 				50C8F3061A8CC12D009FF934 /* PKCRequestTests.m */,
 				50C8F3071A8CC12D009FF934 /* PKCResponseTests.m */,
 				50C8F3081A8CC12D009FF934 /* PKCReversibleBlockValueTransformerTests.m */,
@@ -539,8 +543,11 @@
 				50C8F2C31A8CC0FF009FF934 /* PKCDatastore.m */,
 				50C8F2C41A8CC0FF009FF934 /* PKCHTTPClient.h */,
 				50C8F2C51A8CC0FF009FF934 /* PKCHTTPClient.m */,
+				50F275261AE5291300CA33C7 /* PKCURLSessionTaskDelegate.h */,
+				50F275271AE5291300CA33C7 /* PKCURLSessionTaskDelegate.m */,
 				50C8F2C61A8CC0FF009FF934 /* PKCKeychain.h */,
 				50C8F2C71A8CC0FF009FF934 /* PKCKeychain.m */,
+				50C8F2D81A8CC0FF009FF934 /* PKCTokenStore.h */,
 				50C8F2C81A8CC0FF009FF934 /* PKCKeychainTokenStore.h */,
 				50C8F2C91A8CC0FF009FF934 /* PKCKeychainTokenStore.m */,
 				50C8F2CA1A8CC0FF009FF934 /* PKCMultipartFormData.h */,
@@ -557,7 +564,6 @@
 				50C8F2D51A8CC0FF009FF934 /* PKCResponseSerializer.m */,
 				50C8F2D61A8CC0FF009FF934 /* PKCSecurity.h */,
 				50C8F2D71A8CC0FF009FF934 /* PKCSecurity.m */,
-				50C8F2D81A8CC0FF009FF934 /* PKCTokenStore.h */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -792,6 +798,7 @@
 				50C8F3341A8CC461009FF934 /* NSFileManager+PKCAdditions.m in Sources */,
 				50C8F3841A8CD83B009FF934 /* NSMutableURLRequest+PKCHeaders.m in Sources */,
 				50C8F2E71A8CC0FF009FF934 /* PKCRequest.m in Sources */,
+				50F275281AE5291300CA33C7 /* PKCURLSessionTaskDelegate.m in Sources */,
 				50C8F33D1A8CC4E7009FF934 /* NSString+PKCBase64.m in Sources */,
 				50EA1B7A1A8E1CA10048C9A9 /* PKCPushClient.m in Sources */,
 				5012247E1A8E57E4005BFDA1 /* NSString+PKCURL.m in Sources */,
@@ -856,6 +863,7 @@
 				5012247B1A8E4FC9005BFDA1 /* NSURL+PKCParamatersHandling.m in Sources */,
 				50C8F3161A8CC12D009FF934 /* PKCNestedTestModel.m in Sources */,
 				50C8F3141A8CC12D009FF934 /* PKCModelValueTransformerTests.m in Sources */,
+				50F2752A1AE52F3800CA33C7 /* PKCURLSessionTaskDelegateTests.m in Sources */,
 				50C8F3191A8CC12D009FF934 /* PKCRequestSerializerTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
