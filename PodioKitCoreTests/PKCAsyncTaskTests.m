@@ -103,7 +103,7 @@
     [resolver succeedWithResult:@"Value2"];
   }];
   
-  __block id value = NO;
+  __block id value = nil;
   [task onSuccess:^(id x) {
     value = x;
   }];
