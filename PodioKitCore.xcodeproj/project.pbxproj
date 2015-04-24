@@ -136,6 +136,7 @@
 		5012247C1A8E57E4005BFDA1 /* NSString+PKTURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+PKTURL.h"; sourceTree = "<group>"; };
 		5012247D1A8E57E4005BFDA1 /* NSString+PKTURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+PKTURL.m"; sourceTree = "<group>"; };
 		501224A31A8E5A6B005BFDA1 /* Podio.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Podio.png; sourceTree = "<group>"; };
+		5022DA681AEA4A5100426AB3 /* PodioKitExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PodioKitExtensions.swift; sourceTree = "<group>"; };
 		503042851A91F94E00082A39 /* Podio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Podio.h; sourceTree = "<group>"; };
 		503042861A91F94E00082A39 /* Podio.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Podio.m; sourceTree = "<group>"; };
 		50C8F2A41A8CBF08009FF934 /* libPodioKitCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPodioKitCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -318,6 +319,14 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
+		5022DA671AEA4A5100426AB3 /* Swift */ = {
+			isa = PBXGroup;
+			children = (
+				5022DA681AEA4A5100426AB3 /* PodioKitExtensions.swift */,
+			);
+			path = Swift;
+			sourceTree = "<group>";
+		};
 		50C8F29B1A8CBF08009FF934 = {
 			isa = PBXGroup;
 			children = (
@@ -344,6 +353,7 @@
 				50EA1B681A8E1BE90048C9A9 /* Common */,
 				50EA1B6A1A8E1CA10048C9A9 /* Push */,
 				50EA1B6F1A8E1CA10048C9A9 /* UIKit */,
+				5022DA671AEA4A5100426AB3 /* Swift */,
 			);
 			path = PodioKitCore;
 			sourceTree = "<group>";
