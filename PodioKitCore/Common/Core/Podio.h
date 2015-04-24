@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@class PKCAsyncTask;
+@class PKTAsyncTask;
 
 /**
- The Podio class contains a set of convenience methods to configure the default PKCClient instance.
+ The Podio class contains a set of convenience methods to configure the default PKTClient instance.
  */
 @interface Podio : NSObject
 
@@ -34,7 +34,7 @@
  *
  * @return The resulting request task.
  */
-+ (PKCAsyncTask *)authenticateAsUserWithEmail:(NSString *)email password:(NSString *)password;
++ (PKTAsyncTask *)authenticateAsUserWithEmail:(NSString *)email password:(NSString *)password;
 
 /** Authenticate the default client as an app.
  *
@@ -46,7 +46,7 @@
  *
  * @return The resulting request task.
  */
-+ (PKCAsyncTask *)authenticateAsAppWithID:(NSUInteger)appID token:(NSString *)appToken;
++ (PKTAsyncTask *)authenticateAsAppWithID:(NSUInteger)appID token:(NSString *)appToken;
 
 /** Configure authentication parameters for authenticating the default client as an app.
  *

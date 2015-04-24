@@ -7,34 +7,34 @@
 //
 
 #import "Podio.h"
-#import "PKCClient.h"
-#import "PKCKeychainTokenStore.h"
+#import "PKTClient.h"
+#import "PKTKeychainTokenStore.h"
 
 @implementation Podio
 
 + (void)setupWithAPIKey:(NSString *)key secret:(NSString *)secret {
-  [[PKCClient currentClient] setupWithAPIKey:key secret:secret];
+  [[PKTClient currentClient] setupWithAPIKey:key secret:secret];
 }
 
-+ (PKCAsyncTask *)authenticateAsUserWithEmail:(NSString *)email password:(NSString *)password {
-  return [[PKCClient currentClient] authenticateAsUserWithEmail:email password:password];
++ (PKTAsyncTask *)authenticateAsUserWithEmail:(NSString *)email password:(NSString *)password {
+  return [[PKTClient currentClient] authenticateAsUserWithEmail:email password:password];
 }
 
-+ (PKCAsyncTask *)authenticateAsAppWithID:(NSUInteger)appID token:(NSString *)appToken {
-  return [[PKCClient currentClient] authenticateAsAppWithID:appID token:appToken];
++ (PKTAsyncTask *)authenticateAsAppWithID:(NSUInteger)appID token:(NSString *)appToken {
+  return [[PKTClient currentClient] authenticateAsAppWithID:appID token:appToken];
 }
 
 + (void)authenticateAutomaticallyAsAppWithID:(NSUInteger)appID token:(NSString *)appToken {
-  [[PKCClient currentClient] authenticateAutomaticallyAsAppWithID:appID token:appToken];
+  [[PKTClient currentClient] authenticateAutomaticallyAsAppWithID:appID token:appToken];
 }
 
 + (BOOL)isAuthenticated {
-  return [[PKCClient currentClient] isAuthenticated];
+  return [[PKTClient currentClient] isAuthenticated];
 }
 
 + (void)automaticallyStoreTokenInKeychainForServiceWithName:(NSString *)name {
-  [PKCClient currentClient].tokenStore = [[PKCKeychainTokenStore alloc] initWithService:name];
-  [[PKCClient currentClient] restoreTokenIfNeeded];
+  [PKTClient currentClient].tokenStore = [[PKTKeychainTokenStore alloc] initWithService:name];
+  [[PKTClient currentClient] restoreTokenIfNeeded];
 }
 
 + (void)automaticallyStoreTokenInKeychainForCurrentApp {
