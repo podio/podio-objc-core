@@ -8,12 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "PKTBlockValueTransformer.h"
-#import "PKTReversibleBlockValueTransformer.h"
-#import "PKTModelValueTransformer.h"
-#import "PKTURLValueTransformer.h"
-#import "PKTReferenceTypeValueTransformer.h"
-#import "PKTAppFieldTypeValueTransformer.h"
-#import "PKTDateValueTransformer.h"
 
 @interface NSValueTransformer (PKTTransformers)
 
@@ -27,5 +21,7 @@
 + (NSValueTransformer *)pkt_referenceTypeTransformer;
 + (NSValueTransformer *)pkt_appFieldTypeTransformer;
 + (NSValueTransformer *)pkt_numberValueTransformer;
++ (NSValueTransformer *)pkt_rightValueTransformer;
++ (NSValueTransformer *)pkt_avatarTypeValueTransformer;
 
 @end

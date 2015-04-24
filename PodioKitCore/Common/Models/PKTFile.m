@@ -23,7 +23,7 @@
            @"link" : @"link",
            @"thumbnailLink" : @"thumbnail_link",
            @"createdOn" : @"created_on",
-           @"descriptionText" : @"description"
+           @"fileDescription" : @"description"
            };
 }
 

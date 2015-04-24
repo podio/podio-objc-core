@@ -9,6 +9,46 @@
 #ifndef PodioKit_PKTConstants_h
 #define PodioKit_PKTConstants_h
 
+#pragma mark - Rights
+
+typedef NS_OPTIONS(NSUInteger, PKTRight) {
+  PKTRightNone                  = 0,
+  PKTRightView                  = 1 << 0,
+  PKTRightUpdate                = 1 << 1,
+  PKTRightDelete                = 1 << 2,
+  PKTRightSubscribe             = 1 << 3,
+  PKTRightComment               = 1 << 4,
+  PKTRightRate                  = 1 << 5,
+  PKTRightShare                 = 1 << 6,
+  PKTRightInstall               = 1 << 7,
+  PKTRightAddApp                = 1 << 8,
+  PKTRightAddItem               = 1 << 9,
+  PKTRightAddFile               = 1 << 10,
+  PKTRightAddTask               = 1 << 11,
+  PKTRightAddSpace              = 1 << 12,
+  PKTRightAddStatus             = 1 << 13,
+  PKTRightAddConversation       = 1 << 14,
+  PKTRightReply                 = 1 << 15,
+  PKTRightAddWidget             = 1 << 16,
+  PKTRightStatistics            = 1 << 17,
+  PKTRightAddContact            = 1 << 18,
+  PKTRightAddHook               = 1 << 19,
+  PKTRightAddQuestion           = 1 << 20,
+  PKTRightAddAnswer             = 1 << 21,
+  PKTRightAddContract           = 1 << 22,
+  PKTRightAddUser               = 1 << 23,
+  PKTRightAddUserLight          = 1 << 24,
+  PKTRightMove                  = 1 << 25,
+  PKTRightExport                = 1 << 26,
+  PKTRightReference             = 1 << 27,
+  PKTRightViewAdmins            = 1 << 28,
+  PKTRightDownload              = 1 << 29,
+  PKTRightGrant                 = 1 << 30,
+  PKTRightGrantView             = 1 << 31
+};
+
+#pragma mark - References
+
 typedef NS_ENUM(NSUInteger, PKTReferenceType) {
   PKTReferenceTypeUnknown = 0,
   PKTReferenceTypeApp,
@@ -56,6 +96,46 @@ typedef NS_ENUM(NSUInteger, PKTReferenceType) {
   PKTReferenceTypeSpaceMemberRequest,
   PKTReferenceTypeLive,
   PKTReferenceTypeItemParticipation
+};
+
+#pragma mark - Notifications
+
+typedef NS_ENUM(NSInteger, PKTNotificationType) {
+  PKTNotificationTypeUnknown = 0,
+  PKTNotificationTypeAlert,
+  PKTNotificationTypeTeamAlert,
+  PKTNotificationTypeCreation,
+  PKTNotificationTypeUpdate,
+  PKTNotificationTypeDelete,
+  PKTNotificationTypeComment,
+  PKTNotificationTypeRating,
+  PKTNotificationTypeMessage,
+  PKTNotificationTypeSpaceInvite,
+  PKTNotificationTypeSpaceDelete,
+  PKTNotificationTypeBulletin,
+  PKTNotificationTypeMemberReferenceAdd,
+  PKTNotificationTypeMemberReferenceRemove,
+  PKTNotificationTypeFile,
+  PKTNotificationTypeRoleChange,
+  PKTNotificationTypeConversationAdd,
+  PKTNotificationTypeAnswer,
+  PKTNotificationTypeSelfKickedFromSpace,
+  PKTNotificationTypeSpaceCreate,
+  PKTNotificationTypeMeetingParticipantAdd,
+  PKTNotificationTypeMeetingParticipantRemove,
+  PKTNotificationTypeReminder,
+  PKTNotificationTypeBatchProcess,
+  PKTNotificationTypeBatchComplete,
+  PKTNotificationTypeSpaceMemberRequest,
+  PKTNotificationTypeGrantCreate,
+  PKTNotificationTypeGrantDelete,
+  PKTNotificationTypeGrantCreateOther,
+  PKTNotificationTypeGrantDeleteOther,
+  PKTNotificationTypeReference,
+  PKTNotificationTypeLike,
+  PKTNotificationTypeVote,
+  PKTNotificationTypeParticipation,
+  PKTNotificationTypeFileDelete
 };
 
 #pragma mark - Workspaces
@@ -129,6 +209,14 @@ typedef NS_ENUM(NSUInteger, PKTImageSize) {
 typedef NS_ENUM(NSUInteger, PKTTaskStatus) {
   PKTTaskStatusActive,
   PKTTaskStatusCompleted,
+};
+
+#pragma mark - Avatar
+
+typedef NS_ENUM(NSUInteger, PKTAvatarType) {
+  PKTAvatarTypeUnknown = 0,
+  PKTAvatarTypeFile,
+  PKTAvatarTypeIcon
 };
 
 #endif

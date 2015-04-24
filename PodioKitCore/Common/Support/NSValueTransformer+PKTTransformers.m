@@ -7,8 +7,17 @@
 //
 
 #import "NSValueTransformer+PKTTransformers.h"
+#import "PKTAppField.h"
 #import "PKTConstants.h"
 #import "PKTNumberValueTransformer.h"
+#import "PKTRightValueTransformer.h"
+#import "PKTReversibleBlockValueTransformer.h"
+#import "PKTModelValueTransformer.h"
+#import "PKTURLValueTransformer.h"
+#import "PKTReferenceTypeValueTransformer.h"
+#import "PKTAppFieldTypeValueTransformer.h"
+#import "PKTDateValueTransformer.h"
+#import "PKTAvatarTypeValueTransformer.h"
 
 @implementation NSValueTransformer (PKTTransformers)
 
@@ -47,4 +56,13 @@
 + (NSValueTransformer *)pkt_numberValueTransformer {
   return [PKTNumberValueTransformer new];
 }
+
++ (NSValueTransformer *)pkt_rightValueTransformer {
+  return [PKTRightValueTransformer new];
+}
+
++ (NSValueTransformer *)pkt_avatarTypeValueTransformer {
+  return [PKTAvatarTypeValueTransformer new];
+}
+
 @end
