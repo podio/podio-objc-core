@@ -162,6 +162,8 @@
 		50C8F3771A8CC799009FF934 /* NSDateFormatter+PKTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C8F3751A8CC799009FF934 /* NSDateFormatter+PKTAdditions.m */; };
 		50C8F37A1A8CC7BD009FF934 /* NSNumberFormatter+PKTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C8F3791A8CC7BD009FF934 /* NSNumberFormatter+PKTAdditions.m */; };
 		50C8F3841A8CD83B009FF934 /* NSMutableURLRequest+PKTHeaders.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C8F3831A8CD83B009FF934 /* NSMutableURLRequest+PKTHeaders.m */; };
+		50CB5D9E1AED3FE70024356A /* PKTItemFilters.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CB5D9D1AED3FE70024356A /* PKTItemFilters.m */; };
+		50CB5DA11AED48430024356A /* PKTItemFiltersTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CB5DA01AED48430024356A /* PKTItemFiltersTests.m */; };
 		50EA1B671A8E105E0048C9A9 /* EXPMatchers+PKTBeSupersetOf.m in Sources */ = {isa = PBXBuildFile; fileRef = 50EA1B661A8E105E0048C9A9 /* EXPMatchers+PKTBeSupersetOf.m */; };
 		50EA1B7A1A8E1CA10048C9A9 /* PKTPushClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 50EA1B6C1A8E1CA10048C9A9 /* PKTPushClient.m */; };
 		50EA1B7B1A8E1CA10048C9A9 /* PKTPushEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 50EA1B6E1A8E1CA10048C9A9 /* PKTPushEvent.m */; };
@@ -471,6 +473,9 @@
 		50C8F3821A8CD83B009FF934 /* NSMutableURLRequest+PKTHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "NSMutableURLRequest+PKTHeaders.h"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		50C8F3831A8CD83B009FF934 /* NSMutableURLRequest+PKTHeaders.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = "NSMutableURLRequest+PKTHeaders.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		50C8F3851A8CDA8D009FF934 /* PodioKitCoreTests-prefix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PodioKitCoreTests-prefix.h"; sourceTree = "<group>"; };
+		50CB5D9C1AED3FE70024356A /* PKTItemFilters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKTItemFilters.h; sourceTree = "<group>"; };
+		50CB5D9D1AED3FE70024356A /* PKTItemFilters.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKTItemFilters.m; sourceTree = "<group>"; };
+		50CB5DA01AED48430024356A /* PKTItemFiltersTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKTItemFiltersTests.m; sourceTree = "<group>"; };
 		50EA1B651A8E105E0048C9A9 /* EXPMatchers+PKTBeSupersetOf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "EXPMatchers+PKTBeSupersetOf.h"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		50EA1B661A8E105E0048C9A9 /* EXPMatchers+PKTBeSupersetOf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = "EXPMatchers+PKTBeSupersetOf.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		50EA1B6B1A8E1CA10048C9A9 /* PKTPushClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKTPushClient.h; sourceTree = "<group>"; };
@@ -570,6 +575,7 @@
 				5022DB801AEA735000426AB3 /* PKTUserAPITests.m */,
 				5022DB811AEA735000426AB3 /* PKTWorkspaceMembersAPITests.m */,
 				5022DB821AEA735000426AB3 /* PKTWorkspacesAPITests.m */,
+				50CB5DA01AED48430024356A /* PKTItemFiltersTests.m */,
 			);
 			name = API;
 			sourceTree = "<group>";
@@ -895,6 +901,8 @@
 				5022DB0A1AEA6C0000426AB3 /* PKTUsersAPI.m */,
 				5022DB0B1AEA6C0000426AB3 /* PKTWorkspacesAPI.h */,
 				5022DB0C1AEA6C0000426AB3 /* PKTWorkspacesAPI.m */,
+				50CB5D9C1AED3FE70024356A /* PKTItemFilters.h */,
+				50CB5D9D1AED3FE70024356A /* PKTItemFilters.m */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -1048,7 +1056,7 @@
 		50C8F29C1A8CBF08009FF934 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				CLASSPREFIX = PKC;
+				CLASSPREFIX = PKT;
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Citrix Systems, Inc.";
 				TargetAttributes = {
@@ -1207,6 +1215,7 @@
 				5022DB171AEA6C0000426AB3 /* PKTUsersAPI.m in Sources */,
 				5022DAD51AEA694E00426AB3 /* PKTComment.m in Sources */,
 				50EA1B7A1A8E1CA10048C9A9 /* PKTPushClient.m in Sources */,
+				50CB5D9E1AED3FE70024356A /* PKTItemFilters.m in Sources */,
 				5022DAD61AEA694E00426AB3 /* PKTDateRange.m in Sources */,
 				5012247E1A8E57E4005BFDA1 /* NSString+PKTURL.m in Sources */,
 				50C8F3271A8CC3E0009FF934 /* NSDictionary+PKTQueryParameters.m in Sources */,
@@ -1302,6 +1311,7 @@
 				50C8F3101A8CC12D009FF934 /* PKTImageCacheTests.m in Sources */,
 				50C8F3121A8CC12D009FF934 /* PKTKeychainTokenStoreTests.m in Sources */,
 				5022DB901AEA735000426AB3 /* PKTBlockValueTransformerTests.m in Sources */,
+				50CB5DA11AED48430024356A /* PKTItemFiltersTests.m in Sources */,
 				5022DBA21AEA735000426AB3 /* PKTRightValueTransformerTests.m in Sources */,
 				5022DB831AEA735000426AB3 /* NSDictionary+PKTQueryParametersTests.m in Sources */,
 				5022DB9C1AEA735000426AB3 /* PKTItemTests.m in Sources */,

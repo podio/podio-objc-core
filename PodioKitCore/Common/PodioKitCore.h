@@ -19,8 +19,6 @@
 #import "PKTKeychainTokenStore.h"
 #import "PKTDatastore.h"
 
-
-
 #import "PKTAppsAPI.h"
 #import "PKTItemsAPI.h"
 #import "PKTFilesAPI.h"
@@ -53,6 +51,7 @@
 #import "PKTLocation.h"
 #import "PKTByLine.h"
 #import "PKTPushCredential.h"
+#import "PKTItemFilters.h"
 
 #import "NSError+PKTErrors.h"
 
