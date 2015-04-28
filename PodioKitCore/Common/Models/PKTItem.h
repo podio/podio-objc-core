@@ -30,7 +30,13 @@ typedef void(^PKTItemFilteredFetchCompletionBlock)(NSArray *items, NSUInteger fi
 @property (nonatomic, copy, readonly) NSArray *comments;
 @property (nonatomic, copy, readonly) NSURL *link;
 
+- (instancetype)initWithAppID:(NSUInteger)appID;
+
+- (instancetype)initWithTemplateID:(NSUInteger)templateID;
+
 + (instancetype)itemForAppWithID:(NSUInteger)appID;
+
++ (instancetype)itemUsingTemplateWithID:(NSUInteger)templateID;
 
 #pragma mark - API
 
@@ -46,7 +52,11 @@ typedef void(^PKTItemFilteredFetchCompletionBlock)(NSArray *items, NSUInteger fi
 
 + (PKTAsyncTask *)fetchItemsInAppWithID:(NSUInteger)appID offset:(NSUInteger)offset limit:(NSUInteger)limit sortBy:(NSString *)sortBy descending:(BOOL)descending filters:(NSDictionary *)filters;
 
++ (PKTAsyncTask *)fetchItemsInAppWithID:(NSUInteger)appID spaceID:(NSUInteger)spaceID offset:(NSUInteger)offset limit:(NSUInteger)limit sortBy:(NSString *)sortBy descending:(BOOL)descending filters:(NSDictionary *)filters;
+
 + (PKTAsyncTask *)fetchItemsInAppWithID:(NSUInteger)appID offset:(NSUInteger)offset limit:(NSUInteger)limit viewID:(NSUInteger)viewID;
+
+- (PKTAsyncTask *)createInSpaceWithID:(NSUInteger)spaceID;
 
 - (PKTAsyncTask *)fetch;
 

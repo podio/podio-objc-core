@@ -42,8 +42,16 @@
   return self;
 }
 
+- (instancetype)initWithTemplateID:(NSUInteger)templateID {
+  return [self initWithAppID:templateID];
+}
+
 + (instancetype)itemForAppWithID:(NSUInteger)appID {
   return [[self alloc] initWithAppID:appID];
+}
+
++ (instancetype)itemUsingTemplateWithID:(NSUInteger)templateID {
+  return [[self alloc] initWithTemplateID:templateID];
 }
 
 #pragma mark - Properties
@@ -204,7 +212,12 @@
 }
 
 + (PKTAsyncTask *)fetchItemsInAppWithID:(NSUInteger)appID offset:(NSUInteger)offset limit:(NSUInteger)limit sortBy:(NSString *)sortBy descending:(BOOL)descending filters:(NSDictionary *)filters {
+  return [self fetchItemsInAppWithID:appID spaceID:0 offset:offset limit:limit sortBy:nil descending:descending filters:filters];
+}
+
++ (PKTAsyncTask *)fetchItemsInAppWithID:(NSUInteger)appID spaceID:(NSUInteger)spaceID offset:(NSUInteger)offset limit:(NSUInteger)limit sortBy:(NSString *)sortBy descending:(BOOL)descending filters:(NSDictionary *)filters {
   PKTRequest *request = [PKTItemsAPI requestForFilteredItemsInAppWithID:appID
+                                                                spaceID:spaceID
                                                                  offset:offset
                                                                   limit:limit
                                                                  sortBy:sortBy
@@ -268,7 +281,15 @@
   return task;
 }
 
+- (PKTAsyncTask *)createInSpaceWithID:(NSUInteger)spaceID {
+  return [self saveInSpaceWithID:spaceID];
+}
+
 - (PKTAsyncTask *)save {
+  return [self saveInSpaceWithID:0];
+}
+
+- (PKTAsyncTask *)saveInSpaceWithID:(NSUInteger)spaceID {
   __block PKTAsyncTask *task = nil;
   
   PKTClient *client = [PKTClient currentClient];
@@ -279,7 +300,7 @@
 
       NSArray *itemFields = [self allFieldsToSaveForApp:app];
       [client performBlock:^{
-        saveTask = [self saveWithItemFields:itemFields];
+        saveTask = [self saveWithItemFields:itemFields appID:app.appID spaceID:spaceID];
       }];
       
       return saveTask;
@@ -289,17 +310,28 @@
   return task;
 }
 
-- (PKTAsyncTask *)saveWithItemFields:(NSArray *)itemFields {
+- (PKTAsyncTask *)saveWithItemFields:(NSArray *)itemFields appID:(NSUInteger)appID spaceID:(NSUInteger)spaceID {
   NSDictionary *fields = [self preparedFieldValuesForItemFields:itemFields];
   NSArray *files = self.fileIDs;
   
   PKTRequest *request = nil;
   if (self.itemID == 0) {
-    request = [PKTItemsAPI requestToCreateItemInAppWithID:self.appID
-                                                  fields:fields
-                                                   files:files
-                                                    tags:nil];
+    if (spaceID > 0) {
+      // Create item in specific app
+      request = [PKTItemsAPI requestToCreateItemInAppWithID:appID
+                                                     fields:fields
+                                                      files:files
+                                                       tags:nil];
+    } else {
+      // Create item for global app in space
+      request = [PKTItemsAPI requestToCreateItemInAppWithID:appID
+                                                    spaceID:spaceID
+                                                     fields:fields
+                                                      files:files
+                                                       tags:nil];
+    }
   } else {
+    // Save existing item
     request = [PKTItemsAPI requestToUpdateItemWithID:self.itemID
                                              fields:fields
                                               files:files

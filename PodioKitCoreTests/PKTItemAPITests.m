@@ -31,6 +31,22 @@
   expect(request.parameters[@"tags"]).to.equal(tags);
 }
 
+- (void)testRequestToCreateItemInSpace {
+  NSDictionary *fields = @{
+                           @"text": @"Some text",
+                           @"number_field": @123,
+                           };
+  NSArray *files = @[@233, @432];
+  NSArray *tags = @[@"tag1", @"tag2"];
+  
+  PKTRequest *request = [PKTItemsAPI requestToCreateItemInAppWithID:13242 spaceID:444 fields:fields files:files tags:tags];
+  
+  expect(request.path).to.equal(@"/item/app/13242/space/444");
+  expect(request.parameters[@"fields"]).to.equal([fields copy]);
+  expect(request.parameters[@"file_ids"]).to.equal(files);
+  expect(request.parameters[@"tags"]).to.equal(tags);
+}
+
 - (void)testRequestToUpdateItem {
   NSDictionary *fields = @{
                            @"text": @"Some text",
@@ -66,6 +82,7 @@
                                                               remember:YES];
   
   expect(request.path).to.equal(@"/item/app/123/filter/");
+  expect(request.parameters[@"space_id"]).to.beNil();
   expect(request.parameters[@"offset"]).to.equal(@60);
   expect(request.parameters[@"limit"]).to.equal(@30);
   expect(request.parameters[@"sort_by"]).to.equal(@"created_on");
@@ -102,6 +119,25 @@
   expect(request.path).to.equal(@"/item/app/123/filter/456/");
   expect(request.parameters[@"offset"]).to.equal(@60);
   expect(request.parameters[@"limit"]).to.equal(@30);
+  expect(request.parameters[@"remember"]).to.equal(@YES);
+}
+
+- (void)testRequestToGetFilteredItemsBySpaceAndApp {
+  PKTRequest *request = [PKTItemsAPI requestForFilteredItemsInAppWithID:111
+                                                                spaceID:222
+                                                                 offset:60
+                                                                  limit:30
+                                                                 sortBy:@"created_on"
+                                                             descending:YES
+                                                               remember:YES
+                                                                filters:nil];
+  
+  expect(request.path).to.equal(@"/item/app/111/filter/");
+  expect(request.parameters[@"space_id"]).to.equal(@222);
+  expect(request.parameters[@"offset"]).to.equal(@60);
+  expect(request.parameters[@"limit"]).to.equal(@30);
+  expect(request.parameters[@"sort_by"]).to.equal(@"created_on");
+  expect(request.parameters[@"sort_desc"]).to.equal(@YES);
   expect(request.parameters[@"remember"]).to.equal(@YES);
 }
 

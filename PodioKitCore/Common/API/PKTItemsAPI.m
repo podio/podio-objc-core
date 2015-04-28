@@ -30,11 +30,21 @@
 }
 
 + (PKTRequest *)requestForFilteredItemsInAppWithID:(NSUInteger)appID offset:(NSUInteger)offset limit:(NSUInteger)limit sortBy:(NSString *)sortBy descending:(BOOL)descending remember:(BOOL)remember filters:(NSDictionary *)filters {
+  return [self requestForFilteredItemsInAppWithID:appID spaceID:0 offset:offset limit:limit sortBy:sortBy descending:descending remember:remember filters:filters];
+}
+
++ (PKTRequest *)requestForFilteredItemsInAppWithID:(NSUInteger)appID spaceID:(NSUInteger)spaceID offset:(NSUInteger)offset limit:(NSUInteger)limit sortBy:(NSString *)sortBy descending:(BOOL)descending remember:(BOOL)remember filters:(NSDictionary *)filters {
+  NSParameterAssert(appID > 0);
+  
   NSMutableDictionary *parameters = [NSMutableDictionary new];
   parameters[@"offset"] = @(offset);
   parameters[@"limit"] = @(limit);
   parameters[@"sort_desc"] = @(descending);
   parameters[@"remember"] = @(remember);
+  
+  if (spaceID > 0) {
+    parameters[@"space_id"] = @(spaceID);
+  }
   
   if (sortBy) {
     parameters[@"sort_by"] = sortBy;
@@ -51,6 +61,8 @@
 }
 
 + (PKTRequest *)requestForFilteredItemsInAppWithID:(NSUInteger)appID offset:(NSUInteger)offset limit:(NSUInteger)limit viewID:(NSUInteger)viewID remember:(BOOL)remember {
+  NSParameterAssert(appID > 0);
+  
   NSMutableDictionary *parameters = [NSMutableDictionary new];
   parameters[@"offset"] = @(offset);
   parameters[@"limit"] = @(limit);
@@ -63,6 +75,10 @@
 }
 
 + (PKTRequest *)requestToCreateItemInAppWithID:(NSUInteger)appID fields:(NSDictionary *)fields files:(NSArray *)files tags:(NSArray *)tags {
+  return [self requestToCreateItemInAppWithID:appID spaceID:0 fields:fields files:files tags:tags];
+}
+
++ (PKTRequest *)requestToCreateItemInAppWithID:(NSUInteger)appID spaceID:(NSUInteger)spaceID fields:(NSDictionary *)fields files:(NSArray *)files tags:(NSArray *)tags {
   NSMutableDictionary *parameters = [NSMutableDictionary new];
   
   if ([fields count] > 0) {
@@ -77,7 +93,10 @@
     parameters[@"tags"] = tags;
   }
   
-  NSString *path = PKTRequestPath(@"/item/app/%lu/", (unsigned long)appID);
+  NSString *path = spaceID > 0 ?
+    PKTRequestPath(@"/item/app/%lu/space/%lu", (unsigned long)appID, (unsigned long)spaceID) :
+    PKTRequestPath(@"/item/app/%lu/", (unsigned long)appID);
+  
   PKTRequest *request = [PKTRequest POSTRequestWithPath:path parameters:parameters];
   
   return request;
