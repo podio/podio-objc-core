@@ -81,6 +81,10 @@
 + (PKTRequest *)requestToCreateItemInAppWithID:(NSUInteger)appID spaceID:(NSUInteger)spaceID fields:(NSDictionary *)fields files:(NSArray *)files tags:(NSArray *)tags {
   NSMutableDictionary *parameters = [NSMutableDictionary new];
   
+  if (spaceID > 0) {
+    parameters[@"space_id"] = @(spaceID);
+  }
+  
   if ([fields count] > 0) {
     parameters[@"fields"] = fields;
   }
@@ -93,10 +97,7 @@
     parameters[@"tags"] = tags;
   }
   
-  NSString *path = spaceID > 0 ?
-    PKTRequestPath(@"/item/app/%lu/space/%lu", (unsigned long)appID, (unsigned long)spaceID) :
-    PKTRequestPath(@"/item/app/%lu/", (unsigned long)appID);
-  
+  NSString *path = PKTRequestPath(@"/item/app/%lu/", (unsigned long)appID);
   PKTRequest *request = [PKTRequest POSTRequestWithPath:path parameters:parameters];
   
   return request;

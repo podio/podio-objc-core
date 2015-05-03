@@ -20,7 +20,10 @@
   
   NSMutableDictionary *params = [NSMutableDictionary new];
   params[@"name"] = name;
-  params[@"org_id"] = @(organizationID);
+  
+  if (organizationID > 0) {
+    params[@"org_id"] = @(organizationID);
+  }
   
   switch (privacy) {
     case PKTWorkspacePrivacyOpen:

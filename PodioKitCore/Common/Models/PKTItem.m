@@ -317,15 +317,15 @@
   PKTRequest *request = nil;
   if (self.itemID == 0) {
     if (spaceID > 0) {
-      // Create item in specific app
+      // Create item for global app in space
       request = [PKTItemsAPI requestToCreateItemInAppWithID:appID
+                                                    spaceID:spaceID
                                                      fields:fields
                                                       files:files
                                                        tags:nil];
     } else {
-      // Create item for global app in space
+      // Create item in specific app
       request = [PKTItemsAPI requestToCreateItemInAppWithID:appID
-                                                    spaceID:spaceID
                                                      fields:fields
                                                       files:files
                                                        tags:nil];
