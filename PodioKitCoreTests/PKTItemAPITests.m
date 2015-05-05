@@ -105,6 +105,7 @@
                                                               remember:YES];
   
   expect(request.path).to.equal(@"/item/app/123/filter/");
+  expect(request.method).to.equal(PKTRequestMethodPOST);
   expect(request.parameters[@"space_id"]).to.beNil();
   expect(request.parameters[@"offset"]).to.equal(@60);
   expect(request.parameters[@"limit"]).to.equal(@30);
@@ -124,6 +125,7 @@
                                                                 filters:filters];
   
   expect(request.path).to.equal(@"/item/app/123/filter/");
+  expect(request.method).to.equal(PKTRequestMethodPOST);
   expect(request.parameters[@"offset"]).to.equal(@60);
   expect(request.parameters[@"limit"]).to.equal(@30);
   expect(request.parameters[@"sort_by"]).to.equal(@"created_on");
@@ -140,6 +142,7 @@
                                                               remember:YES];
 
   expect(request.path).to.equal(@"/item/app/123/filter/456/");
+  expect(request.method).to.equal(PKTRequestMethodPOST);
   expect(request.parameters[@"offset"]).to.equal(@60);
   expect(request.parameters[@"limit"]).to.equal(@30);
   expect(request.parameters[@"remember"]).to.equal(@YES);
@@ -156,12 +159,45 @@
                                                                 filters:nil];
   
   expect(request.path).to.equal(@"/item/app/111/filter/");
+  expect(request.method).to.equal(PKTRequestMethodPOST);
   expect(request.parameters[@"space_id"]).to.equal(@222);
   expect(request.parameters[@"offset"]).to.equal(@60);
   expect(request.parameters[@"limit"]).to.equal(@30);
   expect(request.parameters[@"sort_by"]).to.equal(@"created_on");
   expect(request.parameters[@"sort_desc"]).to.equal(@YES);
   expect(request.parameters[@"remember"]).to.equal(@YES);
+}
+
+- (void)testRequestToGetFilteredItemsInPersonalSpace {
+  PKTRequest *request = [PKTItemsAPI requestForFilteredItemsInPersonalSpaceForAppWithID:111
+                                                                                 offset:60
+                                                                                  limit:30
+                                                                                 sortBy:@"created_on"
+                                                                             descending:YES
+                                                                                filters:nil];
+  
+  expect(request.path).to.equal(@"/item/app/111/filter/personal");
+  expect(request.method).to.equal(PKTRequestMethodPOST);
+  expect(request.parameters[@"offset"]).to.equal(@60);
+  expect(request.parameters[@"limit"]).to.equal(@30);
+  expect(request.parameters[@"sort_by"]).to.equal(@"created_on");
+  expect(request.parameters[@"sort_desc"]).to.equal(@YES);
+}
+
+- (void)testRequestToGetFilteredItemsInPublicSpace {
+  PKTRequest *request = [PKTItemsAPI requestForFilteredItemsInPublicSpaceForAppWithID:111
+                                                                               offset:60
+                                                                                limit:30
+                                                                               sortBy:@"created_on"
+                                                                           descending:YES
+                                                                              filters:nil];
+  
+  expect(request.path).to.equal(@"/item/app/111/filter/public");
+  expect(request.method).to.equal(PKTRequestMethodPOST);
+  expect(request.parameters[@"offset"]).to.equal(@60);
+  expect(request.parameters[@"limit"]).to.equal(@30);
+  expect(request.parameters[@"sort_by"]).to.equal(@"created_on");
+  expect(request.parameters[@"sort_desc"]).to.equal(@YES);
 }
 
 @end

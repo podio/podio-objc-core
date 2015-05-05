@@ -219,6 +219,38 @@ static NSUInteger const kSpaceIDPersonal = NSUIntegerMax - 1;
   return [self fetchItemsInAppWithID:appID spaceID:0 offset:offset limit:limit sortBy:nil descending:descending filters:filters];
 }
 
++ (PKTAsyncTask *)fetchItemsInAppWithID:(NSUInteger)appID offset:(NSUInteger)offset limit:(NSUInteger)limit viewID:(NSUInteger)viewID {
+  PKTRequest *request = [PKTItemsAPI requestForFilteredItemsInAppWithID:appID
+                                                                 offset:offset
+                                                                  limit:limit
+                                                                 viewID:viewID
+                                                               remember:NO];
+  
+  return [self fetchFilteredItemsWithRequest:request appID:appID];
+}
+
++ (PKTAsyncTask *)fetchItemsInPersonalSpaceForAppWithID:(NSUInteger)appID offset:(NSUInteger)offset limit:(NSUInteger)limit sortBy:(NSString *)sortBy descending:(BOOL)descending filters:(NSDictionary *)filters {
+  PKTRequest *request = [PKTItemsAPI requestForFilteredItemsInPersonalSpaceForAppWithID:appID
+                                                                                 offset:offset
+                                                                                  limit:limit
+                                                                                 sortBy:sortBy
+                                                                             descending:descending
+                                                                                filters:filters];
+  
+  return [self fetchFilteredItemsWithRequest:request appID:appID];
+}
+
++ (PKTAsyncTask *)fetchItemsInPublicSpaceForAppWithID:(NSUInteger)appID offset:(NSUInteger)offset limit:(NSUInteger)limit sortBy:(NSString *)sortBy descending:(BOOL)descending filters:(NSDictionary *)filters {
+  PKTRequest *request = [PKTItemsAPI requestForFilteredItemsInPublicSpaceForAppWithID:appID
+                                                                               offset:offset
+                                                                                limit:limit
+                                                                               sortBy:sortBy
+                                                                           descending:descending
+                                                                              filters:filters];
+  
+  return [self fetchFilteredItemsWithRequest:request appID:appID];
+}
+
 + (PKTAsyncTask *)fetchItemsInAppWithID:(NSUInteger)appID spaceID:(NSUInteger)spaceID offset:(NSUInteger)offset limit:(NSUInteger)limit sortBy:(NSString *)sortBy descending:(BOOL)descending filters:(NSDictionary *)filters {
   PKTRequest *request = [PKTItemsAPI requestForFilteredItemsInAppWithID:appID
                                                                 spaceID:spaceID
@@ -229,16 +261,6 @@ static NSUInteger const kSpaceIDPersonal = NSUIntegerMax - 1;
                                                                remember:NO
                                                                 filters:filters];
   
-  return [self fetchFilteredItemsWithRequest:request appID:appID];
-}
-
-+ (PKTAsyncTask *)fetchItemsInAppWithID:(NSUInteger)appID offset:(NSUInteger)offset limit:(NSUInteger)limit viewID:(NSUInteger)viewID {
-  PKTRequest *request = [PKTItemsAPI requestForFilteredItemsInAppWithID:appID
-                                                                offset:offset
-                                                                 limit:limit
-                                                                viewID:viewID
-                                                              remember:NO];
-
   return [self fetchFilteredItemsWithRequest:request appID:appID];
 }
 

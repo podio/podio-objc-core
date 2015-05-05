@@ -33,29 +33,70 @@
   return [self requestForFilteredItemsInAppWithID:appID spaceID:0 offset:offset limit:limit sortBy:sortBy descending:descending remember:remember filters:filters];
 }
 
++ (PKTRequest *)requestForFilteredItemsInPersonalSpaceForAppWithID:(NSUInteger)appID offset:(NSUInteger)offset limit:(NSUInteger)limit sortBy:(NSString *)sortBy descending:(BOOL)descending filters:(NSDictionary *)filters {
+  NSParameterAssert(appID > 0);
+  
+  NSString *path = PKTRequestPath(@"/item/app/%lu/filter/personal", (unsigned long)appID);
+  return [self requestForFilteredItemsWithPath:path
+                                    parameters:nil
+                                        offset:offset
+                                         limit:limit
+                                        sortBy:sortBy
+                                    descending:descending
+                                      remember:NO
+                                       filters:filters];
+}
+
++ (PKTRequest *)requestForFilteredItemsInPublicSpaceForAppWithID:(NSUInteger)appID offset:(NSUInteger)offset limit:(NSUInteger)limit sortBy:(NSString *)sortBy descending:(BOOL)descending filters:(NSDictionary *)filters {
+  NSParameterAssert(appID > 0);
+  
+  NSString *path = PKTRequestPath(@"/item/app/%lu/filter/public", (unsigned long)appID);
+  return [self requestForFilteredItemsWithPath:path
+                                    parameters:nil
+                                        offset:offset
+                                         limit:limit
+                                        sortBy:sortBy
+                                    descending:descending
+                                      remember:NO
+                                       filters:filters];
+}
+
 + (PKTRequest *)requestForFilteredItemsInAppWithID:(NSUInteger)appID spaceID:(NSUInteger)spaceID offset:(NSUInteger)offset limit:(NSUInteger)limit sortBy:(NSString *)sortBy descending:(BOOL)descending remember:(BOOL)remember filters:(NSDictionary *)filters {
   NSParameterAssert(appID > 0);
   
   NSMutableDictionary *parameters = [NSMutableDictionary new];
-  parameters[@"offset"] = @(offset);
-  parameters[@"limit"] = @(limit);
-  parameters[@"sort_desc"] = @(descending);
-  parameters[@"remember"] = @(remember);
-  
   if (spaceID > 0) {
     parameters[@"space_id"] = @(spaceID);
   }
-  
+
+  NSString *path = PKTRequestPath(@"/item/app/%lu/filter/", (unsigned long)appID);
+  return [self requestForFilteredItemsWithPath:path
+                                    parameters:parameters
+                                        offset:offset
+                                         limit:limit
+                                        sortBy:sortBy
+                                    descending:descending
+                                      remember:remember
+                                       filters:filters];
+}
+
++ (PKTRequest *)requestForFilteredItemsWithPath:(NSString *)path parameters:(NSDictionary *)params offset:(NSUInteger)offset limit:(NSUInteger)limit sortBy:(NSString *)sortBy descending:(BOOL)descending remember:(BOOL)remember filters:(NSDictionary *)filters {
+
+  NSMutableDictionary *mutParameters = [[NSMutableDictionary alloc] initWithDictionary:params];
+  mutParameters[@"offset"] = @(offset);
+  mutParameters[@"limit"] = @(limit);
+  mutParameters[@"sort_desc"] = @(descending);
+  mutParameters[@"remember"] = @(remember);
+
   if (sortBy) {
-    parameters[@"sort_by"] = sortBy;
+    mutParameters[@"sort_by"] = sortBy;
   }
   
   if (filters) {
-    parameters[@"filters"] = filters;
+    mutParameters[@"filters"] = filters;
   }
   
-  NSString *path = PKTRequestPath(@"/item/app/%lu/filter/", (unsigned long)appID);
-  PKTRequest *request = [PKTRequest POSTRequestWithPath:path parameters:parameters];
+  PKTRequest *request = [PKTRequest POSTRequestWithPath:path parameters:mutParameters];
   
   return request;
 }
