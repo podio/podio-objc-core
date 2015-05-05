@@ -155,6 +155,10 @@ static NSUInteger const kSpaceIDPersonal = NSUIntegerMax - 1;
   return [NSValueTransformer pkt_numberValueTransformer];
 }
 
++ (NSValueTransformer *)pushCredentialValueTransformer {
+  return [NSValueTransformer pkt_transformerWithModelClass:[PKTPushCredential class]];
+}
+
 #pragma mark - API
 
 + (PKTAsyncTask *)fetchItemWithID:(NSUInteger)itemID {
