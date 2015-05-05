@@ -12,6 +12,7 @@
 #import "PKTComment.h"
 #import "PKTApp.h"
 #import "PKTByLine.h"
+#import "PKTPushCredential.h"
 #import "PKTItemsAPI.h"
 #import "NSValueTransformer+PKTTransformers.h"
 #import "NSArray+PKTAdditions.h"
@@ -109,7 +110,8 @@ static NSUInteger const kSpaceIDPersonal = NSUIntegerMax - 1;
     @"mutFields": @"fields",
     @"mutFiles": @"files",
     @"comments": @"comments",
-    @"link": @"link"
+    @"link": @"link",
+    @"pushCredential": @"push"
   };
 }
 

@@ -12,6 +12,7 @@
 @class PKTFile;
 @class PKTByLine;
 @class PKTApp;
+@class PKTPushCredential;
 
 typedef void(^PKTItemFilteredFetchCompletionBlock)(NSArray *items, NSUInteger filteredCount, NSUInteger totalCount, NSError *error);
 
@@ -29,6 +30,7 @@ typedef void(^PKTItemFilteredFetchCompletionBlock)(NSArray *items, NSUInteger fi
 @property (nonatomic, copy, readonly) NSArray *files;
 @property (nonatomic, copy, readonly) NSArray *comments;
 @property (nonatomic, copy, readonly) NSURL *link;
+@property (nonatomic, copy, readonly) PKTPushCredential *pushCredential;
 
 - (instancetype)initWithAppID:(NSUInteger)appID;
 
