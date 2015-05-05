@@ -24,6 +24,10 @@
 
 + (PKTRequest *)requestForFilteredItemsInAppWithID:(NSUInteger)appID offset:(NSUInteger)offset limit:(NSUInteger)limit viewID:(NSUInteger)viewID remember:(BOOL)remember;
 
++ (PKTRequest *)requestToCreateItemInPersonalSpaceForAppWithID:(NSUInteger)appID fields:(NSDictionary *)fields files:(NSArray *)files tags:(NSArray *)tags;
+
++ (PKTRequest *)requestToCreateItemInPublicSpaceForAppWithID:(NSUInteger)appID fields:(NSDictionary *)fields files:(NSArray *)files tags:(NSArray *)tags;
+
 + (PKTRequest *)requestToCreateItemInAppWithID:(NSUInteger)appID fields:(NSDictionary *)fields files:(NSArray *)files tags:(NSArray *)tags;
 
 + (PKTRequest *)requestToCreateItemInAppWithID:(NSUInteger)appID spaceID:(NSUInteger)spaceID fields:(NSDictionary *)fields files:(NSArray *)files tags:(NSArray *)tags;

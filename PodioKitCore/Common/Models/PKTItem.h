@@ -58,6 +58,10 @@ typedef void(^PKTItemFilteredFetchCompletionBlock)(NSArray *items, NSUInteger fi
 
 - (PKTAsyncTask *)createInSpaceWithID:(NSUInteger)spaceID;
 
+- (PKTAsyncTask *)createInPersonalSpace;
+
+- (PKTAsyncTask *)createInPublicSpace;
+
 - (PKTAsyncTask *)fetch;
 
 - (PKTAsyncTask *)save;

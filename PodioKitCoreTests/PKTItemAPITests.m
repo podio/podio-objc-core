@@ -15,36 +15,59 @@
 
 @implementation PKTItemAPITests
 
-- (void)testRequestToCreateItem {
-  NSDictionary *fields = @{
-                           @"text": @"Some text",
-                           @"number_field": @123,
-                           };
-  NSArray *files = @[@233, @432];
-  NSArray *tags = @[@"tag1", @"tag2"];
+- (void)testRequestToCreateItemInAppWithID {
+  PKTRequest *request = [PKTItemsAPI requestToCreateItemInAppWithID:111
+                                                             fields:@{@"title" : @"Some title"}
+                                                              files:@[@1234]
+                                                               tags:@[@"tag1", @"tag2"]];
   
-  PKTRequest *request = [PKTItemsAPI requestToCreateItemInAppWithID:13242 fields:fields files:files tags:tags];
-  
-  expect(request.path).to.equal(@"/item/app/13242/");
-  expect(request.parameters[@"fields"]).to.equal([fields copy]);
-  expect(request.parameters[@"file_ids"]).to.equal(files);
-  expect(request.parameters[@"tags"]).to.equal(tags);
+  expect(request.path).to.equal(@"/item/app/111/");
+  expect(request.method).to.equal(PKTRequestMethodPOST);
+  expect(request.parameters[@"space_id"]).to.beNil();
+  expect(request.parameters[@"fields"]).to.equal(@{@"title" : @"Some title"});
+  expect(request.parameters[@"file_ids"]).to.equal(@[@1234]);
+  expect(request.parameters[@"tags"]).to.equal(@[@"tag1", @"tag2"]);
 }
 
-- (void)testRequestToCreateItemInSpace {
-  NSDictionary *fields = @{
-                           @"text": @"Some text",
-                           @"number_field": @123,
-                           };
-  NSArray *files = @[@233, @432];
-  NSArray *tags = @[@"tag1", @"tag2"];
+- (void)testRequestToCreateItemInAppAndSpaceWithID {
+  PKTRequest *request = [PKTItemsAPI requestToCreateItemInAppWithID:111
+                                                            spaceID:222
+                                                             fields:@{@"title" : @"Some title"}
+                                                              files:@[@1234]
+                                                               tags:@[@"tag1", @"tag2"]];
   
-  PKTRequest *request = [PKTItemsAPI requestToCreateItemInAppWithID:13242 spaceID:444 fields:fields files:files tags:tags];
+  expect(request.path).to.equal(@"/item/app/111/");
+  expect(request.method).to.equal(PKTRequestMethodPOST);
+  expect(request.parameters[@"space_id"]).to.equal(@222);
+  expect(request.parameters[@"fields"]).to.equal(@{@"title" : @"Some title"});
+  expect(request.parameters[@"file_ids"]).to.equal(@[@1234]);
+  expect(request.parameters[@"tags"]).to.equal(@[@"tag1", @"tag2"]);
+}
+
+- (void)testRequestToCreateItemInPersonalSpace {
+  PKTRequest *request = [PKTItemsAPI requestToCreateItemInPersonalSpaceForAppWithID:111
+                                                                             fields:@{@"title" : @"Some title"}
+                                                                              files:@[@1234]
+                                                                               tags:@[@"tag1", @"tag2"]];
   
-  expect(request.path).to.equal(@"/item/app/13242/space/444");
-  expect(request.parameters[@"fields"]).to.equal([fields copy]);
-  expect(request.parameters[@"file_ids"]).to.equal(files);
-  expect(request.parameters[@"tags"]).to.equal(tags);
+  expect(request.path).to.equal(@"/item/app/111/personal");
+  expect(request.method).to.equal(PKTRequestMethodPOST);
+  expect(request.parameters[@"fields"]).to.equal(@{@"title" : @"Some title"});
+  expect(request.parameters[@"file_ids"]).to.equal(@[@1234]);
+  expect(request.parameters[@"tags"]).to.equal(@[@"tag1", @"tag2"]);
+}
+
+- (void)testRequestToCreateItemInPublicSpace {
+  PKTRequest *request = [PKTItemsAPI requestToCreateItemInPublicSpaceForAppWithID:111
+                                                                           fields:@{@"title" : @"Some title"}
+                                                                            files:@[@1234]
+                                                                             tags:@[@"tag1", @"tag2"]];
+  
+  expect(request.path).to.equal(@"/item/app/111/public");
+  expect(request.method).to.equal(PKTRequestMethodPOST);
+  expect(request.parameters[@"fields"]).to.equal(@{@"title" : @"Some title"});
+  expect(request.parameters[@"file_ids"]).to.equal(@[@1234]);
+  expect(request.parameters[@"tags"]).to.equal(@[@"tag1", @"tag2"]);
 }
 
 - (void)testRequestToUpdateItem {

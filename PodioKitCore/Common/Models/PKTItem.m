@@ -17,6 +17,10 @@
 #import "NSArray+PKTAdditions.h"
 #import "PKTMacros.h"
 
+// HACK: Sorry, this is truly horrible but anything for hack week, eh?
+static NSUInteger const kSpaceIDPublic = NSUIntegerMax;
+static NSUInteger const kSpaceIDPersonal = NSUIntegerMax - 1;
+
 @interface PKTItem ()
 
 @property (nonatomic, copy) NSString *title;
@@ -285,6 +289,14 @@
   return [self saveInSpaceWithID:spaceID];
 }
 
+- (PKTAsyncTask *)createInPersonalSpace {
+  return [self saveInSpaceWithID:kSpaceIDPersonal];
+}
+
+- (PKTAsyncTask *)createInPublicSpace {
+  return [self saveInSpaceWithID:kSpaceIDPublic];
+}
+
 - (PKTAsyncTask *)save {
   return [self saveInSpaceWithID:0];
 }
@@ -316,7 +328,17 @@
   
   PKTRequest *request = nil;
   if (self.itemID == 0) {
-    if (spaceID > 0) {
+    if (spaceID == kSpaceIDPublic) {
+      request = [PKTItemsAPI requestToCreateItemInPublicSpaceForAppWithID:appID
+                                                                   fields:fields
+                                                                    files:files
+                                                                     tags:nil];
+    } else if (spaceID == kSpaceIDPersonal) {
+      request = [PKTItemsAPI requestToCreateItemInPersonalSpaceForAppWithID:appID
+                                                                     fields:fields
+                                                                      files:files
+                                                                       tags:nil];
+    } else if (spaceID > 0) {
       // Create item for global app in space
       request = [PKTItemsAPI requestToCreateItemInAppWithID:appID
                                                     spaceID:spaceID

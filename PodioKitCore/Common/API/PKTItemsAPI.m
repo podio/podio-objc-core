@@ -74,31 +74,48 @@
   return request;
 }
 
++ (PKTRequest *)requestToCreateItemInPersonalSpaceForAppWithID:(NSUInteger)appID fields:(NSDictionary *)fields files:(NSArray *)files tags:(NSArray *)tags {
+  NSString *path = PKTRequestPath(@"/item/app/%lu/personal", (unsigned long)appID);
+  return [self requestToCreateItemWithPath:path parameters:nil fields:fields files:files tags:tags];
+}
+
++ (PKTRequest *)requestToCreateItemInPublicSpaceForAppWithID:(NSUInteger)appID fields:(NSDictionary *)fields files:(NSArray *)files tags:(NSArray *)tags {
+  NSString *path = PKTRequestPath(@"/item/app/%lu/public", (unsigned long)appID);
+  return [self requestToCreateItemWithPath:path parameters:nil fields:fields files:files tags:tags];
+}
+
 + (PKTRequest *)requestToCreateItemInAppWithID:(NSUInteger)appID fields:(NSDictionary *)fields files:(NSArray *)files tags:(NSArray *)tags {
   return [self requestToCreateItemInAppWithID:appID spaceID:0 fields:fields files:files tags:tags];
 }
 
 + (PKTRequest *)requestToCreateItemInAppWithID:(NSUInteger)appID spaceID:(NSUInteger)spaceID fields:(NSDictionary *)fields files:(NSArray *)files tags:(NSArray *)tags {
+  NSString *path = PKTRequestPath(@"/item/app/%lu/", (unsigned long)appID);
   NSMutableDictionary *parameters = [NSMutableDictionary new];
   
   if (spaceID > 0) {
     parameters[@"space_id"] = @(spaceID);
   }
   
+  return [self requestToCreateItemWithPath:path parameters:parameters fields:fields files:files tags:tags];
+}
+
++ (PKTRequest *)requestToCreateItemWithPath:(NSString *)path parameters:(NSDictionary *)parameters fields:(NSDictionary *)fields files:(NSArray *)files tags:(NSArray *)tags {
+  NSMutableDictionary *mutParameters = [[NSMutableDictionary alloc] initWithDictionary:parameters];
+  
   if ([fields count] > 0) {
-    parameters[@"fields"] = fields;
+    mutParameters[@"fields"] = fields;
   }
   
   if ([files count] > 0) {
-    parameters[@"file_ids"] = files;
+    mutParameters[@"file_ids"] = files;
   }
   
   if ([tags count] > 0) {
-    parameters[@"tags"] = tags;
+    mutParameters[@"tags"] = tags;
   }
   
-  NSString *path = PKTRequestPath(@"/item/app/%lu/", (unsigned long)appID);
-  PKTRequest *request = [PKTRequest POSTRequestWithPath:path parameters:parameters];
+
+  PKTRequest *request = [PKTRequest POSTRequestWithPath:path parameters:mutParameters];
   
   return request;
 }
