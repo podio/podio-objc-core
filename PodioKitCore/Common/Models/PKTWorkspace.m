@@ -85,40 +85,34 @@
   return [self createWorkspaceWithName:name organizationID:organizationID privacy:PKTWorkspacePrivacyClosed];
 }
 
-- (PKTAsyncTask *)addMemberWithUserID:(NSUInteger)userID role:(PKTWorkspaceMemberRole)role {
-  NSParameterAssert(userID > 0);
-  
-  return [self addMembersWithUserIDs:@[@(userID)] role:role];
++ (PKTAsyncTask *)addMemberToSpaceWithID:(NSUInteger)spaceID userID:(NSUInteger)userID role:(PKTWorkspaceMemberRole)role {
+  return [self addMembersToSpaceWithID:spaceID userIDs:@[@(userID)] role:role];
 }
 
-- (PKTAsyncTask *)addMemberWithProfileID:(NSUInteger)profileID role:(PKTWorkspaceMemberRole)role {
-  NSParameterAssert(profileID > 0);
-  
-  return [self addMembersWithProfileIDs:@[@(profileID)] role:role];
++ (PKTAsyncTask *)addMemberToSpaceWithID:(NSUInteger)spaceID profileID:(NSUInteger)profileID role:(PKTWorkspaceMemberRole)role {
+  return [self addMembersToSpaceWithID:spaceID profileIDs:@[@(profileID)] role:role];
 }
 
-- (PKTAsyncTask *)addMemberWithEmail:(NSString *)email role:(PKTWorkspaceMemberRole)role {
-  NSParameterAssert([email length] > 0);
-  
-  return [self addMembersWithEmails:@[email] role:role];
++ (PKTAsyncTask *)addMemberToSpaceWithID:(NSUInteger)spaceID email:(NSString *)email role:(PKTWorkspaceMemberRole)role {
+  return [self addMembersToSpaceWithID:spaceID emails:@[email] role:role];
 }
 
-- (PKTAsyncTask *)addMembersWithUserIDs:(NSArray *)userIDs role:(PKTWorkspaceMemberRole)role {
++ (PKTAsyncTask *)addMembersToSpaceWithID:(NSUInteger)spaceID userIDs:(NSArray *)userIDs role:(PKTWorkspaceMemberRole)role {
   NSParameterAssert([userIDs count] > 0);
   
-  return [self addMembersWithRole:role message:nil userIDs:userIDs profileIDs:nil emails:nil];
+  return [self addMembersToSpaceWithID:spaceID message:nil role:role userIDs:userIDs profileIDs:nil emails:nil];
 }
 
-- (PKTAsyncTask *)addMembersWithProfileIDs:(NSArray *)profileIDs role:(PKTWorkspaceMemberRole)role {
++ (PKTAsyncTask *)addMembersToSpaceWithID:(NSUInteger)spaceID profileIDs:(NSArray *)profileIDs role:(PKTWorkspaceMemberRole)role {
   NSParameterAssert([profileIDs count] > 0);
   
-  return [self addMembersWithRole:role message:nil userIDs:nil profileIDs:profileIDs emails:nil];
+  return [self addMembersToSpaceWithID:spaceID message:nil role:role userIDs:nil profileIDs:profileIDs emails:nil];
 }
 
-- (PKTAsyncTask *)addMembersWithEmails:(NSArray *)emails role:(PKTWorkspaceMemberRole)role {
++ (PKTAsyncTask *)addMembersToSpaceWithID:(NSUInteger)spaceID emails:(NSArray *)emails role:(PKTWorkspaceMemberRole)role {
   NSParameterAssert([emails count] > 0);
   
-  return [self addMembersWithRole:role message:nil userIDs:nil profileIDs:nil emails:emails];
+  return [self addMembersToSpaceWithID:spaceID message:nil role:role userIDs:nil profileIDs:nil emails:emails];
 }
 
 #pragma mark - Private
@@ -137,8 +131,8 @@
   }];
 }
 
-- (PKTAsyncTask *)addMembersWithRole:(PKTWorkspaceMemberRole)role message:(NSString *)message userIDs:(NSArray *)userIDs profileIDs:(NSArray *)profileIDs emails:(NSArray *)emails {
-  PKTRequest *request = [PKTWorkspaceMembersAPI requestToAddMembersToSpaceWithID:self.spaceID role:role message:message userIDs:userIDs profileIDs:profileIDs emails:emails];
++ (PKTAsyncTask *)addMembersToSpaceWithID:(NSUInteger)spaceID message:(NSString *)message role:(PKTWorkspaceMemberRole)role userIDs:(NSArray *)userIDs profileIDs:(NSArray *)profileIDs emails:(NSArray *)emails {
+  PKTRequest *request = [PKTWorkspaceMembersAPI requestToAddMembersToSpaceWithID:spaceID role:role message:message userIDs:userIDs profileIDs:profileIDs emails:emails];
   PKTAsyncTask *task = [[PKTClient currentClient] performRequest:request];
   
   return task;

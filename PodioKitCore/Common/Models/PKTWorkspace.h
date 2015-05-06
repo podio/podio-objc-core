@@ -35,16 +35,16 @@
 
 + (PKTAsyncTask *)createPrivateWorkspaceWithName:(NSString *)name organizationID:(NSUInteger)organizationID;
 
-- (PKTAsyncTask *)addMemberWithUserID:(NSUInteger)userID role:(PKTWorkspaceMemberRole)role;
++ (PKTAsyncTask *)addMemberToSpaceWithID:(NSUInteger)spaceID userID:(NSUInteger)userID role:(PKTWorkspaceMemberRole)role;
 
-- (PKTAsyncTask *)addMemberWithProfileID:(NSUInteger)profileID role:(PKTWorkspaceMemberRole)role;
++ (PKTAsyncTask *)addMemberToSpaceWithID:(NSUInteger)spaceID  profileID:(NSUInteger)profileID role:(PKTWorkspaceMemberRole)role;
 
-- (PKTAsyncTask *)addMemberWithEmail:(NSString *)email role:(PKTWorkspaceMemberRole)role;
++ (PKTAsyncTask *)addMemberToSpaceWithID:(NSUInteger)spaceID email:(NSString *)email role:(PKTWorkspaceMemberRole)role;
 
-- (PKTAsyncTask *)addMembersWithUserIDs:(NSArray *)userIDs role:(PKTWorkspaceMemberRole)role;
++ (PKTAsyncTask *)addMembersToSpaceWithID:(NSUInteger)spaceID userIDs:(NSArray *)userIDs role:(PKTWorkspaceMemberRole)role;
 
-- (PKTAsyncTask *)addMembersWithProfileIDs:(NSArray *)profileIDs role:(PKTWorkspaceMemberRole)role;
++ (PKTAsyncTask *)addMembersToSpaceWithID:(NSUInteger)spaceID profileIDs:(NSArray *)profileIDs role:(PKTWorkspaceMemberRole)role;
 
-- (PKTAsyncTask *)addMembersWithEmails:(NSArray *)emails role:(PKTWorkspaceMemberRole)role;
++ (PKTAsyncTask *)addMembersToSpaceWithID:(NSUInteger)spaceID emails:(NSArray *)emails role:(PKTWorkspaceMemberRole)role;
 
 @end
