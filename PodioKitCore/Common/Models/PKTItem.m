@@ -272,7 +272,7 @@ static NSUInteger const kSpaceIDPersonal = NSUIntegerMax - 1;
 
 + (PKTAsyncTask *)fetchFilteredItemsWithRequest:(PKTRequest *)request appID:(NSUInteger)appID {
   // Make sure to always include the push credentials
-  request.queryParameters = @{@"fields": @"push"};
+  request.queryParameters = @{@"fields": @"items.fields(push)"};
   
   PKTAsyncTask *requestTask = [[PKTClient currentClient] performRequest:request];
   
