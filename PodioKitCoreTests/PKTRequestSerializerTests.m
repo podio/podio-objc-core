@@ -69,13 +69,42 @@
   expect([[urlRequest allHTTPHeaderFields][@"X-Podio-Request-Id"] length]).to.beGreaterThan(0);
 }
 
-- (void)testURLRequestForPOSTRequest {
+- (void)testURLRequestForGETRequestShouldNotIncludeExtraQueryParameters {
+  PKTRequest *request = [PKTRequest GETRequestWithPath:@"/some/path" parameters:@{@"param1": @"someValue", @"param2": @"someOtherValue"}];
+  request.queryParameters = @{@"extra_param": @"value"};
+  
+  NSURLRequest *urlRequest = [self.testSerializer URLRequestForRequest:request relativeToURL:self.baseURL];
+  expect(urlRequest.URL.path).to.equal(request.path);
+  expect(urlRequest.HTTPMethod).to.equal(@"GET");
+  expect([[urlRequest URL] pkt_queryParameters]).to.pkt_beSupersetOf(request.parameters);
+  expect([[urlRequest URL] pkt_queryParameters]).to.pkt_beSupersetOf(request.queryParameters);
+  expect([[urlRequest allHTTPHeaderFields][@"X-Podio-Request-Id"] length]).to.beGreaterThan(0);
+}
+
+- (void)testURLRequestForPOSTRequestShouldIncludeExtraQueryParameters {
   PKTRequest *request = [PKTRequest POSTRequestWithPath:@"/some/path" parameters:@{@"param1": @"someValue", @"param2": @"someOtherValue"}];
+  request.queryParameters = @{@"extra_param": @"value"};
 
   NSURLRequest *urlRequest = [self.testSerializer URLRequestForRequest:request relativeToURL:self.baseURL];
   expect(urlRequest.URL.path).to.equal(request.path);
   expect(urlRequest.HTTPMethod).to.equal(@"POST");
 
+  NSError *error = nil;
+  id bodyParameters = [NSJSONSerialization JSONObjectWithData:[urlRequest HTTPBody] options:0 error:&error];
+  bodyParameters = [NSDictionary dictionaryWithDictionary:bodyParameters];
+  expect(bodyParameters).to.pkt_beSupersetOf(request.parameters);
+  expect([[[urlRequest URL] pkt_queryParameters] allKeys]).to.contain(@"extra_param");
+  expect([[urlRequest allHTTPHeaderFields][@"X-Podio-Request-Id"] length]).to.beGreaterThan(0);
+  expect([urlRequest allHTTPHeaderFields][@"Content-Type"]).to.equal(@"application/json; charset=utf-8");
+}
+
+- (void)testURLRequestForPOSTRequest {
+  PKTRequest *request = [PKTRequest POSTRequestWithPath:@"/some/path" parameters:@{@"param1": @"someValue", @"param2": @"someOtherValue"}];
+  
+  NSURLRequest *urlRequest = [self.testSerializer URLRequestForRequest:request relativeToURL:self.baseURL];
+  expect(urlRequest.URL.path).to.equal(request.path);
+  expect(urlRequest.HTTPMethod).to.equal(@"POST");
+  
   NSError *error = nil;
   id bodyParameters = [NSJSONSerialization JSONObjectWithData:[urlRequest HTTPBody] options:0 error:&error];
   bodyParameters = [NSDictionary dictionaryWithDictionary:bodyParameters];

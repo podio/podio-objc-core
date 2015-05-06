@@ -33,6 +33,7 @@ typedef NS_ENUM(NSUInteger, PKTRequestContentType) {
 @property (nonatomic, copy, readonly) NSString *path;
 @property (nonatomic, copy, readonly) NSURL *URL;
 @property (nonatomic, copy, readonly) NSDictionary *parameters;
+@property (nonatomic, copy) NSDictionary *queryParameters;
 @property (nonatomic, strong) PKTRequestFileData *fileData;
 @property (nonatomic, assign, readwrite) PKTRequestContentType contentType;
 @property (nonatomic, copy, readwrite) PKTURLRequestConfigurationBlock URLRequestConfigurationBlock;

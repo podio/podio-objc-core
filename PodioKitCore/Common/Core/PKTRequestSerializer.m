@@ -122,7 +122,18 @@ static NSUInteger const kBoundaryLength = 20;
   }
   
   if (request.parameters && [[self class] supportsQueryParametersForRequestMethod:request.method]) {
-    url = [url pkt_URLByAppendingQueryParameters:request.parameters];
+    NSDictionary *parameters = request.parameters;
+
+    // Add query parameters if specificed
+    if (request.queryParameters) {
+      NSMutableDictionary *allParameters = [parameters mutableCopy];
+      [allParameters addEntriesFromDictionary:request.queryParameters];
+      parameters = [allParameters copy];
+    }
+    
+    url = [url pkt_URLByAppendingQueryParameters:parameters];
+  } else if ([request.queryParameters count] > 0) {
+    url = [url pkt_URLByAppendingQueryParameters:request.queryParameters];
   }
   
   NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
